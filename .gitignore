@@ -1,56 +1,149 @@
 ############################
-# Unity auto-generated
-############################
-Library/
-Temp/
-Obj/
-Build/
-Builds/
-Logs/
-UserSettings/
+
+# Unity Essentials (핵심)
 
 ############################
-# OS / Editor
+
+/[Ll]ibrary/
+
+/[Tt]emp/
+
+/[Oo]bj/
+
+/[Bb]uild/
+
+/[Bb]uilds/
+
+/[Ll]ogs/
+
+/[Uu]ser[Ss]ettings/
+
+/[Mm]emoryCaptures/
+
+/[Rr]ecordings/
+
+
+
 ############################
-.DS_Store
-Thumbs.db
+
+# VS Code (추가된 부분)
+
+############################
+
+# VS Code 설정 폴더 (개인 설정, 익스텐션 세팅 등)
+
 .vscode/
-.idea/
-*.swp
+
+
+
+# 워크스페이스 설정 파일
+
+*.code-workspace
+
+
+
+# 로컬 히스토리 (확장 프로그램 쓸 경우)
+
+.history/
+
+
 
 ############################
-# Visual Studio / Rider
+
+# JetBrains Rider
+
 ############################
-*.csproj
-*.sln
+
+.idea/
+
+*.sln.DotSettings.user
+
+*.csproj.DotSettings.user
+
+*.swe
+
+
+
+############################
+
+# Visual Studio (팀원용)
+
+############################
+
+.vs/
+
 *.user
+
+*.userprefs
+
 *.pidb
+
 *.suo
-*.vs/
+
+*.opendb
+
+*.vc.db
+
+
+
+############################
+
+# OS - macOS & Windows
+
+############################
+
+.DS_Store
+
+.AppleDouble
+
+.LSOverride
+
+._*
+
+Thumbs.db
+
+ehthumbs.db
+
+Desktop.ini
+
+
+
+############################
+
+# Unity generated files
+
+############################
+
+*.csproj
+
 *.unityproj
 
-############################
-# Unity build outputs
-############################
+*.sln
+
 *.apk
+
 *.aab
+
 *.exe
+
 *.app
-*.dll
+
+# *.dll
+
 *.unitypackage
 
+*.export
+
+
+
 ############################
-# Crash / cache
+
+# Debug & Crash
+
 ############################
+
 sysinfo.txt
+
 crashlytics-build.properties
 
-############################
-# Addressables
-############################
 ServerData/
-
-############################
-# Logs / temp data
-############################
-*.log
