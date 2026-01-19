@@ -33,7 +33,8 @@ public class ConnectSceneManager : MonoBehaviour
 
     private void Start()
     {
-        /*// 시작하자마자 로비 입장 시도
+        /*
+        // 시작하자마자 로비 입장 시도
         string nick = PlayerPrefs.GetString(KEY_NICK, "").Trim();
 
         if (!string.IsNullOrEmpty(nick))
@@ -43,7 +44,9 @@ public class ConnectSceneManager : MonoBehaviour
             ui.nickNameInput.text = nick;
 
         NetworkManager.Instance.Connect(nick);
-        }*/
+        }
+        */
+
 
     }
     void Awake()
@@ -70,6 +73,7 @@ public class ConnectSceneManager : MonoBehaviour
     //오브젝트가 활성화될 때마다 호출(씬 진입, SetActive(true) 등)
     private void OnEnable()
     {
+        //디버깅용
         if (NetworkManager.Instance == null)
         {
             Debug.LogWarning("[UI] NetworkManager.Instance is null on OnEnable");
@@ -80,7 +84,7 @@ public class ConnectSceneManager : MonoBehaviour
         NetworkManager.Instance.OnRoomListChanged -= RefreshRoomListUI;
         NetworkManager.Instance.OnRoomListChanged += RefreshRoomListUI;
 
-        //이미 캐시에 방이 있으면 즉시 UI에 반영
+        //이미 캐시에 방이 있으면 즉시 UI에 반영 <- 늦게 들어오면 안 보이는 오류 해결
         RefreshRoomListUI();
     }
 
