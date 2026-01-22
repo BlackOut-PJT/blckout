@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Photon.Pun; //PhotonNetwork, MonoBehaviourPunCallbacks
 using Photon.Realtime; //RoomInfo, RoomOptions
 using UnityEngine.SceneManagement;//SceneManager.LoadScene() 사용 위해
+using ExitGames.Client.Photon;
 
 //ConnectScene에서 UI를 바인딩(AddListener)하고, NetworkManager를 호출하는 UI 전담 매니저
 public class ConnectSceneManager : MonoBehaviour
@@ -222,6 +223,21 @@ public class ConnectSceneManager : MonoBehaviour
         return !string.IsNullOrWhiteSpace(GetNick());
     }
 
+    //닉네임 photon에 저장, 갱신 함수
+    private void ApplyNicknameToPhoton(string nick)
+    {
+        if(string.IsNullOrWhiteSpace(nick)) return;
+        
+        PhotonNetwork.NickName = nick;
+
+        //Photon 서버 메모리 상의 플레이어 상태 테이블 담을 해시테이블 생성
+        var props = new ExitGames.Client.Photon.Hashtable();
+        //상태 테이블에 닉네임 저장
+        props["nick"] = nick;
+        //저장된 로컬 플레이어의 테이블을 photon 서버에 업로드/동기화
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+    }
+
     //디버깅용
     public void OnNicknameValueChanged(string value)
     {
@@ -232,6 +248,8 @@ public class ConnectSceneManager : MonoBehaviour
     public void OnNicknameEndEdit(string value)
     {
         SaveNickName();
+        string nick = GetNick();
+        ApplyNicknameToPhoton(nick);
         Debug.Log("닉네임 입력완료: "+value);
     }
 
