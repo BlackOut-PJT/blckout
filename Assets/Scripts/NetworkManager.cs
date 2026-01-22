@@ -105,7 +105,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
 
-
     // --- Photon Callbacks ---
 
     //포톤 연결 성공해서 마스터 서버에 붙으면 자동호출됨
@@ -142,7 +141,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("OnJoinedRoom 호출");
-        SceneManager.LoadScene("Scene_Lobby");
+        //SceneManager.LoadScene("Test_Scene_Nam");
+        PhotonNetwork.LoadLevel("Test_Scene_Nam");
     }
 
     // CreateRoom이 실패했을 때 자동 호출되는 콜백

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 using Photon.Pun;
+using ExitGames.Client.Photon;
 
 //방 하나 표시하는 UI 프리팹 전용 스크립트
 public class RoomItemUI : MonoBehaviour
@@ -39,6 +40,17 @@ public class RoomItemUI : MonoBehaviour
     public void OnJoinButtonClicked()
     {
         if(string.IsNullOrEmpty(cachedRoomName)) return;
+        
+        string nick = PlayerPrefs.GetString("PLAYER_NICKNAME", "").Trim();
+        
+        if (!string.IsNullOrEmpty(nick))
+        {
+            PhotonNetwork.NickName = nick;
+
+            var props = new Hashtable();
+            props["nick"] = nick;
+            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        }
         NetworkManager.Instance.JoinRoom(cachedRoomName);
     }
 }
