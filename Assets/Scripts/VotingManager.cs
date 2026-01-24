@@ -158,6 +158,9 @@ public class VotingManager : MonoBehaviourPunCallbacks
     void FinishVote()
     {
         //최다득표자 계산 + 결과 통보
+        //CaculateResult();
+
+        if (GameStateManager.instance != null) GameStateManager.instance.EndVoting();
         
     }
     #endregion
