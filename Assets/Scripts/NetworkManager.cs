@@ -142,7 +142,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("OnJoinedRoom 호출");
         //SceneManager.LoadScene("Test_Scene_Nam");
-        PhotonNetwork.LoadLevel("Test_Scene_Nam");
+        #region 테스트용 코드
+        PhotonNetwork.LoadLevel("Test_Scene_SY");
+        #endregion
     }
 
     // CreateRoom이 실패했을 때 자동 호출되는 콜백
