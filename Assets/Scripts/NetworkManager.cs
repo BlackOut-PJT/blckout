@@ -27,9 +27,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         else
         {
             Destroy(gameObject);
+            return;
         }
 
-        //PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.AutomaticallySyncScene = true;
         // (방장이 LoadScene하면 나머지도 따라가게 할 때 유용)
     }
 
@@ -141,10 +142,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("OnJoinedRoom 호출");
-        //SceneManager.LoadScene("Test_Scene_Nam");
-        #region 테스트용 코드
-        PhotonNetwork.LoadLevel("Test_Scene_SY");
-        #endregion
+        //SceneManager.LoadScene("[Photon] OnJoinedRoom -> Load Scene_Lobby");
+        PhotonNetwork.LoadLevel("Scene_Lobby");
     }
 
     // CreateRoom이 실패했을 때 자동 호출되는 콜백
