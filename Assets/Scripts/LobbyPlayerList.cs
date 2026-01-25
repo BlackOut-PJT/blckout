@@ -17,11 +17,10 @@ public class LobbyPlayerList : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        Invoke(nameof(Refresh), 0.2f);
         Refresh();
     }
 
-    public override void OnConnectedToMaster()
+    /* public override void OnConnectedToMaster()
     {
         Debug.Log("[PlayerList] Connected to Master");
         PhotonNetwork.JoinLobby();
@@ -35,7 +34,7 @@ public class LobbyPlayerList : MonoBehaviourPunCallbacks
             new RoomOptions { MaxPlayers = 6 },
             TypedLobby.Default
         );
-    }
+    } */
 
 
     public override void OnJoinedRoom()
