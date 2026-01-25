@@ -39,6 +39,15 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RPC_SetGameSTate
+  - RPC_SetGameState
+  - RequestOpen
+  - RequestReport
+  - RpcOpen
+  - RPCReport
+  - RPC_CastVote
+  - RPC_RequestMeeting
+  - RPC_ShowVoteResult
   - RequestOpen
   - RequestReport
   - RPC_ReceiveChat
