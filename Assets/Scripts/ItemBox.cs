@@ -10,6 +10,10 @@ public class ItemBox : MonoBehaviourPun, IInteractable
     //디버그용 콘솔에 띄우는 아이템 이름
     public string debugItemName = "Test Item";
 
+    //14-15 추가
+    [Header("Item Data (D가 만든 ScriptableObject)")]
+    public ItemData itemData; // 인스펙터에 Item_Gunpowder 같은 에셋 드래그
+
     [Header("UI")]
     [SerializeField]
     //ItemBOX 아래 Canvas 넣기
@@ -104,7 +108,7 @@ public class ItemBox : MonoBehaviourPun, IInteractable
 
         //!!!!여기부터가 '연 사람만 받는 개인 처리' 자리
         //예) 팝업 띄우기, 인벤토리에 넣기, 개인 효과 등
-        if(PhotonNetwork.LocalPlayer != null)
+        /* if(PhotonNetwork.LocalPlayer != null)
         {
             if(PhotonNetwork.LocalPlayer.ActorNumber == openerActorNumber)
             {
@@ -112,8 +116,43 @@ public class ItemBox : MonoBehaviourPun, IInteractable
                 Debug.Log("[ItemBox] This client opened the box -> show personal popup / give item");
                 // TODO: UIManager.ShowItemPopup(...)
                 // TODO: Inventory.AddRandomItem(...)
+
+            }
+        } */
+
+        // 연 사람만 받는 개인 처리
+        if (PhotonNetwork.LocalPlayer != null &&
+            PhotonNetwork.LocalPlayer.ActorNumber == openerActorNumber)
+        {
+            if (itemData == null)
+            {
+                Debug.LogWarning($"[ItemBox] itemData is NULL on {name}. Inspector에 ItemData를 꽂아야 함.");
+            }
+            else
+            {
+                var inv = FindObjectOfType<Inventory>();
+                if (inv == null)
+                {
+                    Debug.LogWarning("[ItemBox] Inventory not found in scene.");
+                }
+                else
+                {
+                    // (선택) 슬롯 1칸이면 이미 차있을 때 막기
+                    if (inv.currentItem != null)
+                    {
+                        Debug.Log("[ItemBox] Inventory already has an item. Not adding.");
+                    }
+                    else
+                    {
+                        inv.GetItem(itemData);
+                        Debug.Log($"[ItemBox] Gave item to opener: {itemData.itemName}");
+                    }
+                }
             }
         }
+
+        // 상자 사라지게(모두에게 적용)
+        gameObject.SetActive(false);
 
         //가구 열림 스프라이트 관련해서 추가..?
         

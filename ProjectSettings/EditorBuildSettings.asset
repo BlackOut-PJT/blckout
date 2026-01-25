@@ -14,7 +14,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Prefabs/Scene_Connect.unity
     guid: 8f2026a227003ab4faf1e653d40b19f7
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Scene_Lobby.unity
     guid: fd2f7b958ef2fe54bbcb7e910ab64ae7
   - enabled: 1
