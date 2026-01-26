@@ -14,13 +14,20 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public Animator anim;
     public TextMeshProUGUI playerNameText;
 
-    private Vector3 currentPos;
+    // private Vector3 currentPos;
+
+    private Rigidbody2D rb;
+    private Vector2 moveInput; //입력값 저장용 변수 추가
+
 
     public SpriteRenderer spriteRenderer; //캐릭터 색 변경에 사용 (임시)
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
 
         if (photonView.Owner != null)
         {
@@ -48,15 +55,33 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // 2.게임 상태 체크
         if (GameStateManager.instance.currentState == GameState.Voting)
         {
-            GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+            moveInput = Vector2.zero;
+            UpdateAnimation(Vector3.zero);
             return;
         }
 
-        if  (photonView.IsMine)
-        {
-            ProcessInput();
-        }
+        float x = Input.GetAxisRaw("Horizontal");
+        float y = Input.GetAxisRaw("Vertical");
+        moveInput = new Vector2(x,y).normalized;
+
+       UpdateAnimation(moveInput);
     }
+
+    //물리적인 이동 처리 (벽에 부딪혔을 때 떨리는 현상 방지)
+    void FixedUpdate()
+    {
+        if (!photonView.IsMine) return;
+
+        if (GameStateManager.instance.currentState == GameState.Voting)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        Vector2 nextPos = rb.position + (moveInput * moveSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(nextPos);
+    }
+
 
     public override void OnEnable()
     {
@@ -70,18 +95,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             CheckLifeStatus();
         }
-    }
-
-    void ProcessInput()
-    {
-        float y = Input.GetAxisRaw("Vertical");
-        float x = Input.GetAxisRaw("Horizontal");
-
-        Vector3 moveDir = new Vector3(x, y, 0).normalized;
-
-        transform.position += moveDir * moveSpeed * Time.deltaTime;
-        UpdateAnimation(moveDir);
-
     }
 
     void UpdateAnimation (Vector3 moveDir)
