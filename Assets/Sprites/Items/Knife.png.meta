@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 090d400d3246447a684185f118d281dc
+guid: 4e95a8fbff8714081979a68623404900
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -610639122744365438
-    second: 538_0
+      213: 4431207324333198120
+    second: 558_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,17 +46,17 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 48
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: 0
+  spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,141 +126,33 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 538_0
+      name: 558_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 960
-        height: 540
+        x: 9
+        y: 8
+        width: 30
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 28eadd204f29687f0800000000000000
-      internalID: -610639122744365438
+      spriteID: 82b4dfc759fce7d30800000000000000
+      internalID: 4431207324333198120
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
     customData: 
-    physicsShape:
-    - - {x: -480, y: 270}
-      - {x: -455, y: 270}
-      - {x: -455, y: 87.28931}
-      - {x: -430, y: 45}
-      - {x: -455, y: 3}
-      - {x: -455, y: -245}
-      - {x: -455, y: -270}
-      - {x: -468, y: -270}
-      - {x: -480, y: -270}
-    - - {x: -455, y: -270}
-      - {x: 480, y: -270}
-      - {x: 480, y: -229}
-      - {x: 384, y: -229}
-      - {x: 334, y: -245}
-      - {x: -455, y: -245}
-    - - {x: 455, y: 28}
-      - {x: 455, y: -229}
-      - {x: 480, y: -229}
-      - {x: 480, y: 270}
-      - {x: 455, y: 270}
-    - - {x: 429, y: 18}
-      - {x: 455, y: 18}
-      - {x: 455, y: 270}
-      - {x: 429, y: 270}
-    - - {x: 334, y: 18}
-      - {x: 376, y: 18}
-      - {x: 376, y: 33}
-      - {x: 334, y: 33}
-    - - {x: 334, y: 33}
-      - {x: 339, y: 33}
-      - {x: 339, y: 67}
-      - {x: 334, y: 67}
-    - - {x: -109, y: 186}
-      - {x: 429, y: 186}
-      - {x: 429, y: 270}
-      - {x: -109, y: 270}
-    - - {x: -455, y: 230}
-      - {x: -109, y: 230}
-      - {x: -109, y: 270}
-      - {x: -455, y: 270}
-    - - {x: -455, y: 3}
-      - {x: -455, y: -10}
-      - {x: -431, y: 30}
-      - {x: -431, y: 44}
-    - - {x: -431, y: 30}
-      - {x: -314, y: 30}
-      - {x: -314, y: 48}
-      - {x: -431, y: 48}
-    - - {x: -158, y: 48}
-      - {x: -153, y: 48}
-      - {x: -153, y: 126}
-      - {x: -158, y: 126}
-    - - {x: -153, y: 67}
-      - {x: -109, y: 112}
-      - {x: -109, y: 126}
-      - {x: -153, y: 126}
-    - - {x: -211, y: 30}
-      - {x: -153, y: 30}
-      - {x: -153, y: 48}
-      - {x: -211, y: 48}
-    - - {x: -211, y: -174}
-      - {x: -206, y: -174}
-      - {x: -206, y: 30}
-      - {x: -211, y: 30}
-    - - {x: -319, y: -117}
-      - {x: -314, y: -117}
-      - {x: -314, y: 30}
-      - {x: -319, y: 30}
-    - - {x: -455, y: -194}
-      - {x: -314, y: -194}
-      - {x: -314, y: -189}
-      - {x: -455, y: -189}
-    - - {x: -319, y: -189}
-      - {x: -314, y: -189}
-      - {x: -314, y: -157}
-      - {x: -319, y: -157}
-    - - {x: 2, y: 108}
-      - {x: 235, y: 108}
-      - {x: 235, y: 127}
-      - {x: 2, y: 127}
-    - - {x: 230, y: -110}
-      - {x: 235, y: -110}
-      - {x: 235, y: 108}
-      - {x: 230, y: 108}
-    - - {x: 45, y: -67}
-      - {x: 50, y: -67}
-      - {x: 50, y: -3}
-      - {x: 45, y: -3}
-    - - {x: 50, y: -67}
-      - {x: 129, y: -67}
-      - {x: 129, y: -34}
-      - {x: 50, y: -34}
-    - - {x: -206, y: -86}
-      - {x: 129, y: -86}
-      - {x: 129, y: -67}
-      - {x: -206, y: -67}
-    - - {x: -206, y: -174}
-      - {x: 1, y: -174}
-      - {x: 1, y: -169}
-      - {x: -206, y: -169}
-    - - {x: 61, y: -174}
-      - {x: 235, y: -174}
-      - {x: 235, y: -169}
-      - {x: 61, y: -169}
-    - - {x: 334, y: -245}
-      - {x: 339, y: -244}
-      - {x: 339, y: 18}
-      - {x: 334, y: 18}
+    physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -269,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      538_0: -610639122744365438
+      558_0: 4431207324333198120
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 090d400d3246447a684185f118d281dc
+guid: 0f9fa1e8ce53e4815851ff5a666729a8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -610639122744365438
-    second: 538_0
+      213: -5219854820117553533
+    second: Map_north_0
+  - first:
+      213: 4445519683141841852
+    second: Map_north_1
+  - first:
+      213: 6860095359123429257
+    second: Map_north_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +132,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: 538_0
+      name: Map_north_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 960
-        height: 540
+        x: 19
+        y: 447
+        width: 896
+        height: 74
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +147,52 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 28eadd204f29687f0800000000000000
-      internalID: -610639122744365438
+      spriteID: 38e58c372b95f87b0800000000000000
+      internalID: -5219854820117553533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map_north_1
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 262
+        width: 28
+        height: 41
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb33da33998a1bd30800000000000000
+      internalID: 4445519683141841852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Map_north_2
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 9
+        width: 922
+        height: 33
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9879bddf164f33f50800000000000000
+      internalID: 6860095359123429257
       vertices: []
       indices: 
       edges: []
@@ -150,114 +200,30 @@ TextureImporter:
     outline: []
     customData: 
     physicsShape:
-    - - {x: -480, y: 270}
-      - {x: -455, y: 270}
-      - {x: -455, y: 87.28931}
-      - {x: -430, y: 45}
-      - {x: -455, y: 3}
-      - {x: -455, y: -245}
-      - {x: -455, y: -270}
-      - {x: -468, y: -270}
-      - {x: -480, y: -270}
-    - - {x: -455, y: -270}
-      - {x: 480, y: -270}
-      - {x: 480, y: -229}
-      - {x: 384, y: -229}
-      - {x: 334, y: -245}
-      - {x: -455, y: -245}
-    - - {x: 455, y: 28}
-      - {x: 455, y: -229}
-      - {x: 480, y: -229}
-      - {x: 480, y: 270}
-      - {x: 455, y: 270}
-    - - {x: 429, y: 18}
-      - {x: 455, y: 18}
-      - {x: 455, y: 270}
-      - {x: 429, y: 270}
-    - - {x: 334, y: 18}
-      - {x: 376, y: 18}
-      - {x: 376, y: 33}
-      - {x: 334, y: 33}
-    - - {x: 334, y: 33}
-      - {x: 339, y: 33}
-      - {x: 339, y: 67}
-      - {x: 334, y: 67}
-    - - {x: -109, y: 186}
-      - {x: 429, y: 186}
-      - {x: 429, y: 270}
-      - {x: -109, y: 270}
-    - - {x: -455, y: 230}
-      - {x: -109, y: 230}
-      - {x: -109, y: 270}
-      - {x: -455, y: 270}
-    - - {x: -455, y: 3}
-      - {x: -455, y: -10}
-      - {x: -431, y: 30}
-      - {x: -431, y: 44}
-    - - {x: -431, y: 30}
-      - {x: -314, y: 30}
-      - {x: -314, y: 48}
-      - {x: -431, y: 48}
-    - - {x: -158, y: 48}
-      - {x: -153, y: 48}
-      - {x: -153, y: 126}
-      - {x: -158, y: 126}
-    - - {x: -153, y: 67}
-      - {x: -109, y: 112}
-      - {x: -109, y: 126}
-      - {x: -153, y: 126}
-    - - {x: -211, y: 30}
-      - {x: -153, y: 30}
-      - {x: -153, y: 48}
-      - {x: -211, y: 48}
-    - - {x: -211, y: -174}
-      - {x: -206, y: -174}
-      - {x: -206, y: 30}
-      - {x: -211, y: 30}
-    - - {x: -319, y: -117}
-      - {x: -314, y: -117}
-      - {x: -314, y: 30}
-      - {x: -319, y: 30}
-    - - {x: -455, y: -194}
-      - {x: -314, y: -194}
-      - {x: -314, y: -189}
-      - {x: -455, y: -189}
-    - - {x: -319, y: -189}
-      - {x: -314, y: -189}
-      - {x: -314, y: -157}
-      - {x: -319, y: -157}
-    - - {x: 2, y: 108}
-      - {x: 235, y: 108}
-      - {x: 235, y: 127}
-      - {x: 2, y: 127}
-    - - {x: 230, y: -110}
-      - {x: 235, y: -110}
-      - {x: 235, y: 108}
-      - {x: 230, y: 108}
-    - - {x: 45, y: -67}
-      - {x: 50, y: -67}
-      - {x: 50, y: -3}
-      - {x: 45, y: -3}
-    - - {x: 50, y: -67}
-      - {x: 129, y: -67}
-      - {x: 129, y: -34}
-      - {x: 50, y: -34}
-    - - {x: -206, y: -86}
-      - {x: 129, y: -86}
-      - {x: 129, y: -67}
-      - {x: -206, y: -67}
-    - - {x: -206, y: -174}
-      - {x: 1, y: -174}
-      - {x: 1, y: -169}
-      - {x: -206, y: -169}
-    - - {x: 61, y: -174}
-      - {x: 235, y: -174}
-      - {x: 235, y: -169}
-      - {x: 61, y: -169}
-    - - {x: 334, y: -245}
-      - {x: 339, y: -244}
-      - {x: 339, y: 18}
-      - {x: 334, y: 18}
+    - - {x: 434, y: 219}
+      - {x: -109, y: 250}
+      - {x: -460, y: 250}
+      - {x: -460, y: 210}
+      - {x: -114, y: 210}
+      - {x: -114, y: 178}
+      - {x: 434, y: 178}
+    - - {x: 455, y: 32}
+      - {x: 429, y: 32}
+      - {x: 429, y: -7}
+      - {x: 455, y: -7}
+    - - {x: 460, y: -234}
+      - {x: 460, y: -229}
+      - {x: 382, y: -229}
+      - {x: 366, y: -235}
+      - {x: 356, y: -238}
+      - {x: 342, y: -246}
+      - {x: 339, y: -246}
+      - {x: 339, y: -253}
+      - {x: 338, y: -253}
+      - {x: 338, y: -254}
+      - {x: -460, y: -254}
+      - {x: -460, y: -260}
+      - {x: 338, y: -260}
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
     internalID: 1537655665
@@ -269,7 +235,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      538_0: -610639122744365438
+      Map_north_0: -5219854820117553533
+      Map_north_1: 4445519683141841852
+      Map_north_2: 6860095359123429257
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
