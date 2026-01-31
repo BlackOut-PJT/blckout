@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: "\uD3ED\uC8FD"
   itemType: 1
-  icon: {fileID: -1419381550283157397, guid: 593043c0ef89ab34dbb400baf86041b2, type: 3}
+  itemID: 3
+  icon: {fileID: 21300000, guid: 6b7c0fd10bb7147de982745231b13baa, type: 3}
   killerOnly: 0

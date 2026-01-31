@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4323b0b48ada14692aa54340bf5186d4, type: 3}
-  m_Name: Item_Gunpowder
+  m_Name: Item_Paper
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: "\uD654\uC57D"
+  itemName: "\uC885\uC774"
   itemType: 0
-  itemID: 0
-  icon: {fileID: 4897381305830190984, guid: 9ac860458b6944d5d89f8c79cb93fac6, type: 3}
-  killerOnly: 1
+  itemID: 2
+  icon: {fileID: -3656730414671605715, guid: 991c136d5b6254d9cbfd5b260df6e2c1, type: 3}
+  killerOnly: 0
