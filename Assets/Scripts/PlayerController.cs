@@ -52,8 +52,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // 1.내 캐릭터 아니면 조종X
         if (!photonView.IsMine) return;
 
-        // 2.게임 상태 체크
-        if (GameStateManager.instance.currentState == GameState.Voting)
+        // 
+        // 2.게임 상태 체크 + 게임 시작 하였는지 체크
+        if (GameStateManager.instance.isGameStart == false || GameStateManager.instance.currentState == GameState.Voting)
         {
             moveInput = Vector2.zero;
             UpdateAnimation(Vector3.zero);
@@ -64,7 +65,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         float y = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(x,y).normalized;
 
-       UpdateAnimation(moveInput);
+        UpdateAnimation(moveInput);
     }
 
     //물리적인 이동 처리 (벽에 부딪혔을 때 떨리는 현상 방지)
@@ -72,7 +73,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (!photonView.IsMine) return;
 
-        if (GameStateManager.instance.currentState == GameState.Voting)
+        // 게임 시작 전 or 투표 상태이면 물리 이동 정지
+        if (GameStateManager.instance.isGameStart == false || GameStateManager.instance.currentState == GameState.Voting)
         {
             rb.linearVelocity = Vector2.zero;
             return;
