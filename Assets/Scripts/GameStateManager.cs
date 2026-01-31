@@ -162,6 +162,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
         int survivorCount = 0;
         int killerCount = 0;
+        int notYetCnt = 0; // 직업 로딩 전 승리 조건 체크 시
 
         foreach (Player p in PhotonNetwork.PlayerList)
         {
@@ -177,8 +178,10 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
                 if (job == "Survivor") survivorCount++;
                 else if (job == "Killer") killerCount++;
             }
+            else notYetCnt++;
         }
 
+        if(notYetCnt>0) return WhoWin.None; // 아직 로딩 다 안 됐으면 승리 조건 체크x
         if (survivorCount == 0) return WhoWin.KillerWin;
         if (killerCount == 0) return WhoWin.SurvivorWin;
         if (currentGameTime <= 0) return WhoWin.SurvivorWin;
@@ -320,8 +323,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         if (resultText != null)
         {
             resultText.gameObject.SetActive(true);
-            if (winner == WhoWin.SurvivorWin) resultText.text = "🥳SURVIVOR WIN!";
-            else resultText.text = "🥳KILLER WIN!";
+            if (winner == WhoWin.SurvivorWin) resultText.text = "SURVIVOR WIN!";
+            else resultText.text = "KILLER WIN!";
         }        
     }
 
