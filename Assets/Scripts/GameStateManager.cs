@@ -114,7 +114,12 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
             if (currentGameTime <= 0) currentGameTime = 0;
 
-            CheckWinCondition();
+            WhoWin result = CheckWinCondition();
+            if (result != WhoWin.None) // 게임 종료되었다면
+            {
+                Debug.Log($"[게임 종료] 승리: {result}");
+                photonView.RPC("RPC_EndGame", RpcTarget.All, result);
+            }
         }
 
         // 3. 투표 시작 요청(우선은 M키 누르면 시작되게)
@@ -152,6 +157,32 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public WhoWin CheckWinCondition()
     {
+        // 생존자 승리: 게임 시작 다 지나면 or 살인마 검거
+        // 살인마 승리: 생존자 전멸
+
+        int survivorCount = 0;
+        int killerCount = 0;
+
+        foreach (Player p in PhotonNetwork.PlayerList)
+        {
+            object isDeadValue;
+            if (p.CustomProperties.TryGetValue("IsDead", out isDeadValue))
+            {
+                if ((bool)isDeadValue == true) continue; // 죽었으면 카운트x
+            }
+
+            if (p.CustomProperties.TryGetValue("Job", out object jobObject))
+            {
+                string job = (string)jobObject;
+                if (job == "Survivor") survivorCount++;
+                else if (job == "Killer") killerCount++;
+            }
+        }
+
+        if (survivorCount == 0) return WhoWin.KillerWin;
+        if (killerCount == 0) return WhoWin.SurvivorWin;
+        if (currentGameTime <= 0) return WhoWin.SurvivorWin;
+
         return WhoWin.None;
     }
 
@@ -277,6 +308,21 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
                 globalLight.intensity = 1.0f;
                 break;
         }
+    }
+
+    [PunRPC]
+    public void RPC_EndGame(WhoWin winner)
+    {
+        currentState = GameState.Result;
+        isGameStart = false; // 플레이어 움직임 봉쇄
+
+        // 결과 텍스트 띄우기
+        if (resultText != null)
+        {
+            resultText.gameObject.SetActive(true);
+            if (winner == WhoWin.SurvivorWin) resultText.text = "🥳SURVIVOR WIN!";
+            else resultText.text = "🥳KILLER WIN!";
+        }        
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
