@@ -71,9 +71,9 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         if (votingPanel != null) votingPanel.SetActive(false);
         UpdateLightState();
 
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsConnectedAndReady)
         {
-            AssignJobs();
+            photonView.RPC("RPC_ReportLoadingComplete", RpcTarget.MasterClient);
         }
     }
 
