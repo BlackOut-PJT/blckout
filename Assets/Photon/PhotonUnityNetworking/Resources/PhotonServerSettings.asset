@@ -54,6 +54,20 @@ MonoBehaviour:
   - RPC_ReceiveSystem
   - RpcOpen
   - RPCReport
+  - RPC_ReportLoadingComplete
+  - RPC_StartGame
+  - RPC_EndGame
+  - RequestCraftingOpen
+  - RequestGetItem
+  - SetItem
+  - AddItem
+  - RPC_RemoveItem
+  - RPC_AddItem
+  - RemoveCraftIngredient
+  - RPC_AddCraftIngredient
+  - RPC_UpdateSlot
+  - RPC_TryCraftItem
+  - RPC_DestroySelf
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

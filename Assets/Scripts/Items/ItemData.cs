@@ -12,6 +12,7 @@ public class ItemData : ScriptableObject
     [Header("Basic Info")]
     public string itemName;
     public ItemType itemType;
+    public int itemID;
 
     [Header("Visual")]
     public Sprite icon; // 임시 아이콘(색깔 스프라이트)
