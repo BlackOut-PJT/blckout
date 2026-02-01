@@ -245,9 +245,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38dd91a65fc04b94eba7af36b0799f9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReadyManager
-  statusText: {fileID: 219242847675082324}
+  statusText: {fileID: 0}
   readyButton: {fileID: 606506291902060741}
-  readyButtonText: {fileID: 3175341390557535367}
+  readyButtonText: {fileID: 0}
   leaveButton: {fileID: 7629306024783538236}
   startButton: {fileID: 7481235147749471434}
 --- !u!1 &2590276645091342689
@@ -559,10 +559,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7037228867981512270}
   - {fileID: 3132636208826785540}
-  - {fileID: 8596210460063584247}
+  - {fileID: 7037228867981512270}
   - {fileID: 7512704979689218938}
+  - {fileID: 8596210460063584247}
   m_Father: {fileID: 8315403796648704162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

@@ -1,4 +1,5 @@
 using System.Text;
+using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -9,9 +10,9 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class ReadyManager : MonoBehaviourPunCallbacks
 {
     [Header("UI 연결")]
-    [SerializeField] private Text statusText; // 준비 여부를 표시할 UI 텍스트
+    [SerializeField] private TextMeshProUGUI statusText; // 준비 여부를 표시할 UI 텍스트
     [SerializeField] private Button readyButton;
-    [SerializeField] private Text readyButtonText;
+    [SerializeField] private TextMeshProUGUI readyButtonText;
     [SerializeField] private Button leaveButton;
     [SerializeField] private Button startButton;
 
@@ -24,6 +25,8 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         readyButton.onClick.AddListener(OnClickReadyButton);
         leaveButton.onClick.AddListener(OnClickLeaveButton);
         startButton.onClick.AddListener(StartGame);
+
+        UpdateStartButtonState();
     }
 
     public void OnClickReadyButton()
@@ -64,13 +67,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         // 다른 모든 플레이어들에게 본인이 false임을 동기화
         PhotonNetwork.LocalPlayer.SetCustomProperties(initialProps);
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // 방장이면 시작 버튼은 보이지만 비활성화 상태
-            startButton.gameObject.SetActive(true);
-            startButton.interactable = false;
-        }
-        else startButton.gameObject.SetActive(false); // 일반 플레이어는 숨김처리
+        UpdateStartButtonState();
     }
 
     // Leave 버튼 누른 후 진짜로 방에서 퇴장 후
@@ -79,7 +76,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         // 플레이어를 다시 로비창으로 이동시켜주기
         Debug.Log("방 퇴장 완료. 로비창으로 돌아갑니다.");
         // 로비씬의 이름 Lobby 겠죠??
-        SceneManager.LoadScene("Lobby");
+        SceneManager.LoadScene("Scene_Connect");
     }
 
     // 내가 아닌 다른 플레이어가 퇴장했을 시
@@ -116,13 +113,19 @@ public class ReadyManager : MonoBehaviourPunCallbacks
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
         Debug.Log($"바뀐 방장이 난가? {newMasterClient.IsLocal}");
-        
-        // 방장이 바뀌면 바뀐 방장에게 start button 보이게 처리.
-        if (newMasterClient == PhotonNetwork.LocalPlayer)
+
+        UpdateStartButtonState();
+    }
+
+    void UpdateStartButtonState()
+    {
+        if (PhotonNetwork.IsMasterClient)
         {
+            // 방장이면 시작 버튼은 보이지만 비활성화 상태
             startButton.gameObject.SetActive(true);
-            startButton.interactable = CheckGameStartCondition();
+            startButton.interactable = false;
         }
+        else startButton.gameObject.SetActive(false); // 일반 플레이어는 숨김처리
     }
 
     public void UpdateStatusText()
@@ -141,7 +144,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         }
 
         var stringBuilder = new StringBuilder();
-        stringBuilder.AppendLine($"현재 {readyPlayerCnt}/{curPlayerCnt}명 준비됨");
+        stringBuilder.AppendLine($"READY [{readyPlayerCnt}/{curPlayerCnt}]");
         statusText.text = stringBuilder.ToString();
     }
 
@@ -151,7 +154,9 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         int curPlayerCnt = PhotonNetwork.CurrentRoom.PlayerCount; // 현재 인원
         int maxPlayer = PhotonNetwork.CurrentRoom.MaxPlayers; // 방의 최대 인원
 
-        if (curPlayerCnt == maxPlayer) // 6명 있고
+        Debug.Log($"[디버그] 현재 인원: {curPlayerCnt} / 최대 인원: {maxPlayer}");
+
+        if (curPlayerCnt == maxPlayer)
         {
             // 모두 준비 상태인지 확인
             foreach (Player p in PhotonNetwork.PlayerList)
@@ -176,11 +181,8 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             // 게임 시작 시 더 이상 다른 사람이 방으로 못 들어오게 막기
-            // 아마 로비창에서 막아주겠지만 제미나이 추천으로 넣었어용
             PhotonNetwork.CurrentRoom.IsOpen = false;
-
-            // 인게임 씬 로드(이름 InGame이겠죠??)
-            PhotonNetwork.LoadLevel("TestInGameScene");
+            PhotonNetwork.LoadLevel("Test_Scene_SY");
         }
     }
 }

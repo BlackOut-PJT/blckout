@@ -54,6 +54,9 @@ MonoBehaviour:
   - RPC_ReceiveSystem
   - RpcOpen
   - RPCReport
+  - RPC_ReportLoadingComplete
+  - RPC_StartGame
+  - RPC_EndGame
   - RequestCraftingOpen
   - RequestGetItem
   - SetItem
