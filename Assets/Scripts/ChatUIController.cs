@@ -80,7 +80,13 @@ public class ChatUIController : MonoBehaviour
         var tmp = go.GetComponentInChildren<TMP_Text>();
         if (tmp != null) tmp.text = msg;
 
-        StartCoroutine(ScrollToBottomNextFrame());
+        // 수정: 채팅 패널이 비활성화되어 있을 때 코루틴을 실행하면 에러가 남.
+        // 따라서 현재 활성화된 상태일 때만 스크롤을 내리도록 체크
+        if (this.gameObject.activeInHierarchy)
+        {
+            StartCoroutine(ScrollToBottomNextFrame());
+        }
+        
         /* Debug.Log($"[ChatUI] AddMessage called. content={(content==null?"NULL":"OK")} prefab={(chatMessagePrefab==null?"NULL":"OK")}, msg={msg}");
 
         if (chatMessagePrefab == null)

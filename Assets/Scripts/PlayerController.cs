@@ -45,15 +45,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
             }
         }
         #endregion
+
+        ApplyKillerNameRed(); // 시작할 때 직업이 있을 수 있으니 여기서도 체크
     }
 
     void Update()
-    {   
+    {
         // 1.내 캐릭터 아니면 조종X
         if (!photonView.IsMine) return;
 
-        // 2.게임 상태 체크
-        if (GameStateManager.instance.currentState == GameState.Voting)
+        // 2.게임 상태 체크 + 게임 시작 하였는지 체크
+        if (GameStateManager.instance.isGameStart == false || GameStateManager.instance.currentState == GameState.Voting)
         {
             moveInput = Vector2.zero;
             UpdateAnimation(Vector3.zero);
@@ -62,9 +64,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
-        moveInput = new Vector2(x,y).normalized;
+        moveInput = new Vector2(x, y).normalized;
 
-       UpdateAnimation(moveInput);
+        UpdateAnimation(moveInput);
     }
 
     //물리적인 이동 처리 (벽에 부딪혔을 때 떨리는 현상 방지)
@@ -72,7 +74,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (!photonView.IsMine) return;
 
-        if (GameStateManager.instance.currentState == GameState.Voting)
+        // 게임 시작 전 or 투표 상태이면 물리 이동 정지
+        if (GameStateManager.instance.isGameStart == false || GameStateManager.instance.currentState == GameState.Voting)
         {
             rb.linearVelocity = Vector2.zero;
             return;
@@ -91,13 +94,21 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        if (targetPlayer.ActorNumber == photonView.Owner.ActorNumber && changedProps.ContainsKey("IsDead"))
+        if (targetPlayer.ActorNumber == photonView.Owner.ActorNumber)
         {
-            CheckLifeStatus();
+            if (changedProps.ContainsKey("IsDead"))
+            {
+                CheckLifeStatus();
+            }
+
+            if (changedProps.ContainsKey("Job"))
+            {
+                ApplyKillerNameRed();
+            }
         }
     }
 
-    void UpdateAnimation (Vector3 moveDir)
+    void UpdateAnimation(Vector3 moveDir)
     {
         if (moveDir.magnitude > 0)
         {
@@ -117,6 +128,24 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         if (photonView.Owner.CustomProperties.ContainsKey("IsDead")) isDead = (bool)photonView.Owner.CustomProperties["IsDead"];
         if (isDead) Die();
+    }
+
+    void ApplyKillerNameRed()
+    {
+        object jobValue;
+        if (photonView.Owner.CustomProperties.TryGetValue("Job", out jobValue))
+        {
+            string job = (string)jobValue;
+
+            if (job == "Killer" && photonView.IsMine)
+            {
+                playerNameText.color = Color.red; // 킬러면 빨간색
+            }
+            else
+            {
+                playerNameText.color = Color.black; // 생존자면 검정색
+            }
+        }
     }
 
     void Die()

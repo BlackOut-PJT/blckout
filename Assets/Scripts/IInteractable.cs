@@ -9,4 +9,5 @@ public interface IInteractable
 
     //플레이어가 E를 눌렀을 때 실행되는 상호작용 함수
     void Interact(Player interactor);
+    void ShowPanel (bool show);
 }

@@ -93,4 +93,10 @@ public class DeadBody : MonoBehaviourPun, IInteractable
         //예) VoteManager.Instance.StartVote();
 
     }
+
+    //TEST
+    public void ShowPanel(bool show)
+    {
+        
+    }
 }
