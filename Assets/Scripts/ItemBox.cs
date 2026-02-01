@@ -155,6 +155,10 @@ public class ItemBox : MonoBehaviourPun, IInteractable
         gameObject.SetActive(false);
 
         //가구 열림 스프라이트 관련해서 추가..?
+    }
+
+    public void ShowPanel (bool show)
+    {
         
     }
 }

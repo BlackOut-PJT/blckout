@@ -54,7 +54,8 @@ public class VoteSlot : MonoBehaviour
     void SetAliveVisual()
     {
         Color color;
-        ColorUtility.TryParseHtmlString("#ECDAC0", out color);
+        //BCAD9B
+        ColorUtility.TryParseHtmlString("#BCAD9B", out color);
         playerSlotBackground.color = color;
 
         myButton.interactable = true;
@@ -63,7 +64,10 @@ public class VoteSlot : MonoBehaviour
 
     void SetDeadVisual()
     {
-        playerSlotBackground.color = new Color(0.3f, 0.3f, 0.3f);
+        Color color;
+        ColorUtility.TryParseHtmlString("#79544E", out color);
+
+        playerSlotBackground.color = color;
         myButton.interactable = false;
         playerNameText.color = Color.red;
 
