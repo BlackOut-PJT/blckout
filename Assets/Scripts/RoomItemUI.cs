@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
 using ExitGames.Client.Photon;
@@ -8,8 +9,8 @@ using ExitGames.Client.Photon;
 public class RoomItemUI : MonoBehaviour
 {
     [Header("Text")]
-    [SerializeField] private Text roomName;//방 이름 표시 txt
-    [SerializeField] private Text playerCount;//현재인원수 txt
+    [SerializeField] private TextMeshProUGUI roomName;//방 이름 표시 TMP
+    [SerializeField] private TextMeshProUGUI playerCount;//현재인원수 TMP
 
     [Header("Button")]
     [SerializeField] private Button btnJoin;      //참여하기 버튼(Inspector에 연결)

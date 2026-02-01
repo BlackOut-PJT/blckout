@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ConnectUIBinder : MonoBehaviour
 {
     [Header("NickName")]
-    public InputField nickNameInput;
+    public TMP_InputField nickNameInput;
 
     [Header("Top Buttons")]
     public Button btnBack;
@@ -20,7 +21,7 @@ public class ConnectUIBinder : MonoBehaviour
 
     [Header("Create Room Popup")]
     public GameObject createRoomPopup;
-    public InputField roomNameInput;
+    public TMP_InputField roomNameInput;
     public Button btnConfirm;
     public Button btnCancel;
 

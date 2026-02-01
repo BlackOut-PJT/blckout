@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using Photon.Pun; //PhotonNetwork, MonoBehaviourPunCallbacks
 using Photon.Realtime; //RoomInfo, RoomOptions
 using UnityEngine.SceneManagement;//SceneManager.LoadScene() 사용 위해
@@ -16,11 +17,11 @@ public class ConnectSceneManager : MonoBehaviour
     [SerializeField] private ConnectUIBinder ui;
 
     [Header("Nickname")]
-    public InputField NickNameInput;
+    public TMP_InputField NickNameInput;
 
     [Header("Create Room Popup")]
     public GameObject createRoomPopup; //방만들기 팝업 패널
-    public InputField RoomNameInput;//팝업 내 방이름 인풋필드
+    public TMP_InputField RoomNameInput;//팝업 내 방이름 인풋필드
 
     [Header("Room List")]
     public Transform roomListParent; //roomItem 담아놓을 부모
