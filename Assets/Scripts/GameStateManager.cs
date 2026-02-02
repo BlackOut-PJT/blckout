@@ -54,7 +54,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Start()
     {
-        #region 테스트용 코드
+        //isGameStart = true;
+        /*#region 테스트용 코드
         if (PhotonNetwork.IsConnectedAndReady)
         {
             resultText.text = "";
@@ -68,7 +69,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             props.Add("IsDead", false);
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
-        #endregion
+        #endregion*/
 
         blackoutDelay = Random.Range(30f, 60f); // 30초->30~60초 랜덤으로 변경
         currentGameTime = gameTime;
