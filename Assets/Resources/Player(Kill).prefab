@@ -258,6 +258,7 @@ GameObject:
   - component: {fileID: 63777657872127596}
   - component: {fileID: 6567382224021773748}
   - component: {fileID: 6526352683532356387}
+  - component: {fileID: 2280144054850353352}
   m_Layer: 0
   m_Name: Player(Kill)
   m_TagString: Untagged
@@ -542,3 +543,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryModel
   item: {fileID: 0}
+--- !u!114 &2280144054850353352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8180571238026562750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3de8b6f82e307a4478b1f0fa7477baa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KillController
