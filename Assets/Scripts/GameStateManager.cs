@@ -54,7 +54,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Start()
     {
-        #region 테스트용 코드
+        //isGameStart = true;
+        /*#region 테스트용 코드
         if (PhotonNetwork.IsConnectedAndReady)
         {
             resultText.text = "";

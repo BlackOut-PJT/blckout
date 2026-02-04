@@ -30,7 +30,7 @@ public class SightSystemController : MonoBehaviour
     [SerializeField] private float visionRadius_Normal = 10f;
 
     [Tooltip("암전 시 visionlight 시야 반경")]
-    [SerializeField] private float visionRadius_OffLight = 3.5f;
+    [SerializeField] private float visionRadius_OffLight = 2.5f;
 
     [Header("닉네임 숨기기")]
     [Tooltip("플레이어 프리팹 내 닉네임 UI 루트(캔버스) 오브젝트 이름")]
@@ -43,6 +43,11 @@ public class SightSystemController : MonoBehaviour
     //내부 상태 (중복 호출 방지 위해)
     private bool isBlackout;//현재 암전 켜져있는지 저장
 
+    private void Start()
+    {
+        if (grayscaleVolume != null) grayscaleVolume.weight = 0f;
+    }
+    
     private void OnEnable()
     {
         //씬에 GameStateManager 싱글톤 존재하는지 확인
@@ -175,7 +180,8 @@ public class SightSystemController : MonoBehaviour
         //인스펙터 연결 확인
         if(grayscaleVolume != null)
             //볼륨 켜서 흑백 효과 적용
-            grayscaleVolume.enabled = true;
+            //grayscaleVolume.enabled = true;
+            grayscaleVolume.weight = 1f;
 
         //3) 닉네임 숨김
         HideOtherNicknames(true);
@@ -205,7 +211,8 @@ public class SightSystemController : MonoBehaviour
 
         if (grayscaleVolume != null) // 흑백 볼륨이 연결되어 있으면
             // 흑백 효과 끄기(원래 색으로)
-            grayscaleVolume.enabled = false; 
+            //grayscaleVolume.enabled = false;
+            grayscaleVolume.weight = 0f;
             
         HideOtherNicknames(false);
         // 다른 사람 닉네임도 다시 켜기
@@ -217,6 +224,7 @@ public class SightSystemController : MonoBehaviour
     //VisionLight 반경 값 바꾸는 함수
     private void SetLightRadius(Light2D light2D, float radius)
     {
+        // URP 2D Light2D는 타입이 뭐든(버전에 따라) 이 값이 반경 역할을 함
         light2D.pointLightOuterRadius = radius;
     }
 
