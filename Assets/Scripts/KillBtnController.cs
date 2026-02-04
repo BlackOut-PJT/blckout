@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Unity.VisualScripting;
 
 public class KillBtnController : MonoBehaviourPunCallbacks
 {
@@ -13,6 +14,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
     [Header("스킬 설정")]
     [SerializeField] private float coolTime = 40f; // 쿨타임 40초(임시)
+    [SerializeField] private float killRange = 1.5f; // 사정거리는 1.5유닛
 
     private bool isCoolDown = false; // 스킬쿨 세는 중인지
 
@@ -82,7 +84,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
         if (isCoolDown) return; // 쿨타임 중이라면 무시
 
-        if (Attack()) // 킬 성공 시
+        if (Attack()) // 킬 성공 시 코루틴 실행
         {
             Debug.Log("스킬 사용함. 쿨타임 시작");
             StartCoroutine(StartCoolDown());
@@ -96,7 +98,58 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
     public bool Attack()
     {
-        // 사정거리 내 타겟이 있는지 확인.
+        PlayerController targetScript = null; // PlayerController.cs를 가져오기 위해
+        GameObject myPlayer = null;
+        GameObject closestPlayer = null;
+        float closestDistance = Mathf.Infinity;
+
+        // 1) 게임 내 플레이어들(tag가 Player)을 탐색
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+
+        // 2) 내 플레이어 가져오기
+        foreach (GameObject p in players)
+        {
+            // 플레이어의 커스텀 프로퍼티 정보 가져오기
+            PhotonView pv = p.GetComponent<PhotonView>();
+            if (pv.IsMine)
+            {
+                myPlayer = p; // 내 플레이어 저장
+                break;
+            }
+        }
+
+        // 3) 살아있고 가장 가까운 생존자 탐색
+        foreach (GameObject p in players)
+        {
+            // 플레이어의 커스텀 프로퍼티 정보 가져오기
+            PhotonView pv = p.GetComponent<PhotonView>();
+            bool isDead = (bool)pv.Owner.CustomProperties["IsDead"];
+
+            if (!pv.IsMine && !isDead) // 내 캐릭터가 아니고 상대 플레이어가 살아있다면
+            {
+                float curDistance = Vector2.Distance(myPlayer.transform.position, p.transform.position);
+                if(curDistance < closestDistance)
+                {
+                    closestDistance = curDistance; // 최솟값 갱신
+                    closestPlayer = p; // 가장 가까운 플레이어도 갱신
+                }
+            }
+        }
+
+        // 가장 가까운 플레이어의 PlayerController.cs 스크립트를 가져오기
+        targetScript = closestPlayer.GetComponent<PlayerController>();
+
+        // 4) 킬 스킬 사용했을 때 사정거리(1.5유닛) 안 가장 가까운 플레이어 죽이기
+        if(closestDistance < killRange)
+        {
+            Debug.Log($"킬 성공! 사망자: {targetScript.photonView.Owner.NickName}");
+            
+            // 타켓 플레이어 사망 처리: 가져온 스크립트의 RPC 함수 호출
+            
+
+            return true; // 스킬 사용 성공
+        }
+        else return false; // 스킬 사용 실패
     }
 
     // 스킬 쿨타임 360도 돌아가는 거(UI)용 코루틴 함수
