@@ -49,5 +49,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
     {
         // 킬 버튼 이미지를 kill(active) -> kill(inactive)으로 변경
         // 킬 기능: 사거리 내 가장 가까운 플레이어 죽이기
+
+        Debug.Log("킬 버튼 눌림!!");
     }
 }
