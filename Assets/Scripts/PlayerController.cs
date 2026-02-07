@@ -13,14 +13,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [Header("컴포넌트 연결")]
     public Animator anim;
     public TextMeshProUGUI playerNameText;
+    public SpriteRenderer spriteRenderer; //캐릭터 색 변경에 사용 (임시)
+
+    [Header("시체 이미지 설정")]
+    public Sprite deadSprite; // 시체 이미지
+    public int deadSortingOrder = 0; // 시체는 발 밑에 깔려야 하므로 순서 낮춤
 
     // private Vector3 currentPos;
 
     private Rigidbody2D rb;
     private Vector2 moveInput; //입력값 저장용 변수 추가
-
-
-    public SpriteRenderer spriteRenderer; //캐릭터 색 변경에 사용 (임시)
 
     void Start()
     {
@@ -148,10 +150,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
-    void Die()
+    public void Die()
     {
         Debug.Log($"{photonView.Owner.NickName} 사망!");
+        photonView.RPC("RPC_ChangeToDeadBody", RpcTarget.All);
 
+        /*
         if (spriteRenderer != null)
         {
             playerNameText.color = Color.red;
@@ -159,6 +163,39 @@ public class PlayerController : MonoBehaviourPunCallbacks
             color.a = 0.5f; //반투명
             spriteRenderer.color = color;
         }
+        */
+    }
 
+    // 모든 플레이어들에게 죽은 플레이어가 시체로 보이게
+    [PunRPC]
+    public void RPC_ChangeToDeadBody()
+    {
+        // 애니메이터 끄기
+        if (anim != null) anim.enabled = false;
+        
+        // 스프라이트 교체
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null && deadSprite != null)
+        {
+            sr.sprite = deadSprite;
+
+            // 시체는 바닥에 깔려야 하므로 그리기 순서를 낮춤
+            sr.sortingOrder = deadSortingOrder;
+
+            Debug.Log("스프라이트 교체!");
+        }
+
+        // 더 이상 충돌하지 않게 Collider 끄기
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        // 움직임 멈추기
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.linearVelocity = Vector2.zero;
+
+        // PlayerController 스크립트 기능 정지
+        this.enabled = false;
+
+        Debug.Log("충돌, 움직임, 조작 모두 끔!");
     }
 }
