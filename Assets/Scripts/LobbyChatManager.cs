@@ -1,45 +1,86 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class LobbyChatManager : MonoBehaviourPunCallbacks
 {
     [Header("UI")]
     public ChatUIController chatUI;
 
+    // 중복 방지(가장 확실한 방식)
+    private static LobbyChatManager _instance;
+
+    // UI 아직 안 잡혔을 때 메시지 저장
+    private readonly Queue<string> _pending = new Queue<string>();
+
+    // 시스템 중복 제거
+    private string _lastSystem;
+    private float _lastSystemTime;
+    private const float SYSTEM_DEDUP_WINDOW = 0.5f;
+
     private void Awake()
     {
-        // 씬에 2개 생기는 경우 방지(특히 DontDestroyOnLoad 썼을 때)
-        var all = FindObjectsOfType<LobbyChatManager>(true);
-        if (all.Length > 1)
+        if (_instance != null && _instance != this)
         {
-            Debug.LogWarning("[Chat] Duplicate LobbyChatManager detected. Destroying this one.");
             Destroy(gameObject);
             return;
         }
+        _instance = this;
 
-        // PhotonView 필수 확인
         if (photonView == null)
             Debug.LogError("[Chat] PhotonView is missing on LobbyChatManager!");
-
-        // chatUI가 비어있으면 자동으로 찾아보기
-        if (chatUI == null)
-            chatUI = FindAnyObjectByType<ChatUIController>();
     }
 
     private void Start()
     {
         Debug.Log($"[Chat] Start Connected={PhotonNetwork.IsConnected} InRoom={PhotonNetwork.InRoom} Nick={PhotonNetwork.NickName}");
+
+        // 혹시 UI가 이미 존재하면 연결 시도 + 밀린 메시지 flush
+        EnsureUI();
+        FlushPending();
+    }
+
+    public override void OnJoinedRoom()
+    {
+        Debug.Log($"[Chat] OnJoinedRoom! IsMaster: {PhotonNetwork.IsMasterClient}");
+
+        string msg = PhotonNetwork.IsMasterClient 
+            ? $"[SYSTEM] {PhotonNetwork.NickName} created the room (Master)" 
+            : $"[SYSTEM] {PhotonNetwork.NickName} joined";
+
+        EnqueueOrAdd(msg);
+    }
+
+    private IEnumerator CoLocalJoinedAndNotifyOthers()
+    {
+        // UI가 늦게 올라와도 상관없게: 큐에 넣고 나중에 flush
+        EnqueueOrAdd($"[SYSTEM] {PhotonNetwork.NickName} joined");
+
+        // 다른 사람들에게만 알림
+        if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
+            photonView.RPC(nameof(RPC_ReceiveSystem), RpcTarget.Others, $"{PhotonNetwork.NickName} joined");
+
+        yield break;
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        SendSystem($"{newPlayer.NickName} joined");
+        // 오직 방장(MasterClient)만 이 RPC를 발신하도록 제한하여 중복을 막습니다.
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // RpcTarget.All을 통해 새로 들어온 사람 포함 모두에게 메시지 전송
+            photonView.RPC(nameof(RPC_ReceiveSystem), RpcTarget.All, $"{newPlayer.NickName} joined");
+        }
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        SendSystem($"{otherPlayer.NickName} left");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC(nameof(RPC_ReceiveSystem), RpcTarget.All, $"{otherPlayer.NickName} left");
+        }
     }
 
     public void SendChat(string msg)
@@ -47,31 +88,28 @@ public class LobbyChatManager : MonoBehaviourPunCallbacks
         msg = (msg ?? "").Trim();
         if (string.IsNullOrEmpty(msg)) return;
 
-        // 룸 밖이면 RPC 못 보냄 → UI에 안내만
         if (!PhotonNetwork.IsConnected || !PhotonNetwork.InRoom)
         {
-            Debug.LogWarning("[Chat] Not connected / not in room. Printing local only.");
-            EnsureUI();
-            chatUI?.AddMessage($"[SYSTEM] Not connected / not in room");
+            EnqueueOrAdd("[SYSTEM] Not connected / not in room");
             return;
         }
 
-        string nick = string.IsNullOrEmpty(PhotonNetwork.NickName) ? "Unknown" : PhotonNetwork.NickName;
+        int actorNumber = PhotonNetwork.LocalPlayer.ActorNumber;
+        Debug.Log($"[Chat] SendChat => actor={actorNumber} msg={msg} viewID={photonView.ViewID}");
 
-        Debug.Log($"[Chat] SendChat => {nick} : {msg}");
-        photonView.RPC(nameof(RPC_ReceiveChat), RpcTarget.All, nick, msg);
+        photonView.RPC(nameof(RPC_ReceiveChat), RpcTarget.All, actorNumber, msg);
     }
 
     [PunRPC]
-    private void RPC_ReceiveChat(string nick, string msg)
+    private void RPC_ReceiveChat(int actorNumber, string msg)
     {
-        EnsureUI();
+        var p = PhotonNetwork.CurrentRoom?.GetPlayer(actorNumber);
+        string displayNick = (p != null && !string.IsNullOrEmpty(p.NickName)) ? p.NickName : $"P{actorNumber}";
+        string formatted = $"[{displayNick}] {msg}";
 
-        // ✅ 원하는 포맷: [플레이어이름] 보낸 채팅
-        string formatted = $"[{nick}] {msg}";
+        Debug.Log($"[Chat] RPC_ReceiveChat ARRIVED on {PhotonNetwork.NickName} chatUI_null={(chatUI == null)}");
 
-        Debug.Log($"[Chat] RPC_ReceiveChat => {formatted} (chatUI null? {chatUI == null})");
-        chatUI?.AddMessage(formatted);
+        EnqueueOrAdd(formatted);
     }
 
     public void SendSystem(string msg)
@@ -79,10 +117,15 @@ public class LobbyChatManager : MonoBehaviourPunCallbacks
         msg = (msg ?? "").Trim();
         if (string.IsNullOrEmpty(msg)) return;
 
+        // 송신단 중복 제거(선택)
+        if (msg == _lastSystem && Time.time - _lastSystemTime < SYSTEM_DEDUP_WINDOW)
+            return;
+        _lastSystem = msg;
+        _lastSystemTime = Time.time;
+
         if (!PhotonNetwork.IsConnected || !PhotonNetwork.InRoom)
         {
-            EnsureUI();
-            chatUI?.AddMessage($"[SYSTEM] {msg}");
+            EnqueueOrAdd($"[SYSTEM] {msg}");
             return;
         }
 
@@ -92,8 +135,36 @@ public class LobbyChatManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_ReceiveSystem(string msg)
     {
+        msg = (msg ?? "").Trim();
+        if (string.IsNullOrEmpty(msg)) return;
+
+        // 수신단 중복 제거(강력)
+        if (msg == _lastSystem && Time.time - _lastSystemTime < SYSTEM_DEDUP_WINDOW)
+            return;
+        _lastSystem = msg;
+        _lastSystemTime = Time.time;
+
+        EnqueueOrAdd($"[SYSTEM] {msg}");
+    }
+
+    private void EnqueueOrAdd(string line)
+    {
         EnsureUI();
-        chatUI?.AddMessage($"[SYSTEM] {msg}");
+        if (chatUI == null)
+        {
+            _pending.Enqueue(line);
+            return;
+        }
+
+        chatUI.AddMessage(line);
+    }
+
+    private void FlushPending()
+    {
+        if (chatUI == null) return;
+
+        while (_pending.Count > 0)
+            chatUI.AddMessage(_pending.Dequeue());
     }
 
     private void EnsureUI()
@@ -101,6 +172,16 @@ public class LobbyChatManager : MonoBehaviourPunCallbacks
         if (chatUI == null)
             chatUI = FindAnyObjectByType<ChatUIController>();
     }
+
+    // BindUI가 호출될 때 즉시 Flush 하도록 보강
+    public void BindUI(ChatUIController ui)
+    {
+        Debug.Log("[Chat] UI Bound to Manager");
+        chatUI = ui;
+        EnsureUI(); // 한 번 더 체크
+        FlushPending();
+    }
 }
+
 
 

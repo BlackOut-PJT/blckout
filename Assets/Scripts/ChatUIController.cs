@@ -24,6 +24,12 @@ public class ChatUIController : MonoBehaviour
 
     private void Awake()
     {
+        if (lobbyChat == null)
+            lobbyChat = FindAnyObjectByType<LobbyChatManager>();
+
+        if (lobbyChat != null)
+            lobbyChat.BindUI(this);
+
         if (sendButton != null)
             sendButton.onClick.AddListener(OnSend);
         else
@@ -33,7 +39,8 @@ public class ChatUIController : MonoBehaviour
             inputField.onSubmit.AddListener(_ => OnSend());
         else
             Debug.LogWarning("[ChatUI] inputField is null");
-    }
+    } 
+
 
     public void ToggleChatPanel()
     {
@@ -52,7 +59,11 @@ public class ChatUIController : MonoBehaviour
 
     private void OnSend()
     {
-        if (inputField == null) return;
+        if (lobbyChat == null)
+        {
+            Debug.LogError("[ChatUI] lobbyChat is null. Check scene reference!");
+            return;
+        }
 
         string msg = inputField.text;
         if (string.IsNullOrWhiteSpace(msg)) return;

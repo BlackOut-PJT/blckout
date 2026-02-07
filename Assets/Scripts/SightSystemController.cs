@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.Experimental.Rendering.Universal;//2d renderer 조명 사용
+//2d renderer 조명 사용
 using Photon.Pun;//PhotonView.IsMine 사용
 
 //GameStateManager의 상태 변경에 반응해서
