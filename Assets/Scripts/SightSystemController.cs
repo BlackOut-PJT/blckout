@@ -34,7 +34,7 @@ public class SightSystemController : MonoBehaviour
 
     [Header("닉네임 숨기기")]
     [Tooltip("플레이어 프리팹 내 닉네임 UI 루트(캔버스) 오브젝트 이름")]
-    [SerializeField] private string nicknameRootName = "Canvas";
+    [SerializeField] private string nicknameTextName = "NicknameText";
 
     [Header("암전 게임 상태")]
     [SerializeField] private GameState offLightState = GameState.Playing_OffLight;
@@ -127,19 +127,19 @@ public class SightSystemController : MonoBehaviour
             if(pv==null) continue;
 
             //플레이어 프리팹 내부에서 canvas 이름의 자식 오브젝트 찾음
-            Transform nicknameCanvas = p.transform.Find(nicknameRootName);
-            if(nicknameCanvas == null) continue;
+            Transform nicknameText = p.transform.Find("Canvas/"+nicknameTextName);
+            if(nicknameText == null) continue;
             //이 플레이어가 내 로컬 플레이어인지 확인
             if (pv.IsMine)
             {
                 //내 닉네임 ui는 항상 보이게 유지
-                nicknameCanvas.gameObject.SetActive(true);
+                nicknameText.gameObject.SetActive(true);
             }
             //타인 캐릭터면
             else
             {
                 //암전이면 숨김, 해제면 다시 표시
-                nicknameCanvas.gameObject.SetActive(!isBlackout);
+                nicknameText.gameObject.SetActive(!isBlackout);
                 //isBlackout이 true면 !isBlackout = false -> Canvas 꺼짐(닉네임 숨김)
 
             }
