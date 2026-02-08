@@ -159,6 +159,20 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
             // 가져온 스크립트의 Die() 함수 호출
             targetScript.Die();
+            
+            #region [범인태그]
+            //밝은 상태에서 Attack했다면
+            if(GameStateManager.instance != null && GameStateManager.instance.currentState == GameState.Playing_OnLight)
+            {
+                //살인마 오브젝트 PhotonView 컴포넌트 가져옴
+                PhotonView killerPV = myPlayer.GetComponent<PhotonView>();
+
+                if(killerPV != null)
+                    //모든 클라에게 RPC 호출 -> 10초 동안 범인 표시
+                    killerPV.RPC("RPC_ShowCriminalTag", RpcTarget.All, 10f);
+
+            }
+            #endregion
 
             return true; // 스킬 사용 성공
         }
