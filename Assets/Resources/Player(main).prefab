@@ -254,7 +254,7 @@ MonoBehaviour:
   m_text: "\uD50C\uB808\uC774\uC5B4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8490d1470c3a644a0b06299224a476dc, type: 2}
-  m_sharedMaterial: {fileID: 3013116079223382450, guid: 8490d1470c3a644a0b06299224a476dc, type: 2}
+  m_sharedMaterial: {fileID: 803746856627935701, guid: 8490d1470c3a644a0b06299224a476dc, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -533,6 +533,8 @@ MonoBehaviour:
   anim: {fileID: 4377210779074387404}
   playerNameText: {fileID: 4534010434648015675}
   spriteRenderer: {fileID: 8733851416894423090}
+  deadSprite: {fileID: 0}
+  deadSortingOrder: 0
 --- !u!114 &7481538514369894759
 MonoBehaviour:
   m_ObjectHideFlags: 0

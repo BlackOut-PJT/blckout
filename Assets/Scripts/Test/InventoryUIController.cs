@@ -70,4 +70,11 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
     {
         this.interactTarget = interactTarget;
     }
+
+    ////추가
+    public void OnClickUseItem()
+    {
+        if(inventoryModel == null) return;
+        inventoryModel.UseItem();
+    }
 }

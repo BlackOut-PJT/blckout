@@ -39,4 +39,20 @@ public class InventoryModel : MonoBehaviourPun
     {
         
     }
+
+    ////useitem 추가
+    public void UseItem()
+    {
+        if(!photonView.IsMine) return;
+        if(item == null) return;
+
+        if(item.itemID == 3)
+        {
+            FireworkRpcRelay.Instance?.UseFirework(3f);
+            RemoveItem();
+            return;
+        }
+
+        Debug.Log($"[InventoryModel] UseItem not implemented for itemID={item.itemID}");
+    }
 }

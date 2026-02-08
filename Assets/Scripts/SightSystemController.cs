@@ -3,6 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 //2d renderer 조명 사용
 using Photon.Pun;//PhotonView.IsMine 사용
+using System.Collections;//폭죽 코루틴 사용
 
 //GameStateManager의 상태 변경에 반응해서
 //암전(시야 축소 + global light 어둡게 + 흑백 + 닉네임 숨김) 토글 스크립트
@@ -17,31 +18,31 @@ public class SightSystemController : MonoBehaviour
     [Tooltip("흑백 필터용 Volume")]
     [SerializeField] private Volume grayscaleVolume;
 
+    [Header("Global Light 조절")]
+    [SerializeField] private Light2D globalLight;
+    [SerializeField] private float globalIntensity_Normal = 1f;
+    [SerializeField] private float globalIntensity_Blackout = 0f;
+    [SerializeField] private float globalIntensity_Firework = 0.9f;
 
-    [Header("조명 설정")]
+    [Header("visionlight 설정")]
 
     [Tooltip("평소 VisionLight 밝기 (보통 0)")]
     [SerializeField] private float visionIntensity_Normal = 0f;
-
-    [Tooltip("암전 시 VisionLight 밝기")]
     [SerializeField] private float visionIntensity_OffLight = 1f;
-
-    [Tooltip("평소 visionLight의 시야 반경")] 
     [SerializeField] private float visionRadius_Normal = 10f;
-
-    [Tooltip("암전 시 visionlight 시야 반경")]
     [SerializeField] private float visionRadius_OffLight = 2.5f;
 
     [Header("닉네임 숨기기")]
     [Tooltip("플레이어 프리팹 내 닉네임 UI 루트(캔버스) 오브젝트 이름")]
-    [SerializeField] private string nicknameRootName = "Canvas";
+    [SerializeField] private string nicknameTextName = "NicknameText";
 
-    [Header("GameState")]
-    [Tooltip("암전이 적용되는 게임 상태")]
+    [Header("암전 게임 상태")]
     [SerializeField] private GameState offLightState = GameState.Playing_OffLight;
 
     //내부 상태 (중복 호출 방지 위해)
     private bool isBlackout;//현재 암전 켜져있는지 저장
+    private bool isFireworkActive; //폭죽 작동 중인지 체크
+    private Coroutine fireworkCoroutine;
 
     private void Start()
     {
@@ -106,9 +107,10 @@ public class SightSystemController : MonoBehaviour
 
             visionLight = found;
 
-            //연결되자마자 평소 상태 기본값 세팅
-            visionLight.intensity = visionIntensity_Normal;
-            SetLightRadius(visionLight, visionRadius_Normal);
+            //로컬에서만 visionlight 켜기
+            visionLight.enabled = true;
+
+            ApplyCurrentVisualState();//바인딩 직후 현재 상태 반영
 
             Debug.Log("[SightSystemController] Bound VisionLight (visionlight) from local player.");
             return; // 한 번 찾으면 끝
@@ -128,19 +130,19 @@ public class SightSystemController : MonoBehaviour
             if(pv==null) continue;
 
             //플레이어 프리팹 내부에서 canvas 이름의 자식 오브젝트 찾음
-            Transform nicknameCanvas = p.transform.Find(nicknameRootName);
-            if(nicknameCanvas == null) continue;
+            Transform nicknameText = p.transform.Find("Canvas/"+nicknameTextName);
+            if(nicknameText == null) continue;
             //이 플레이어가 내 로컬 플레이어인지 확인
             if (pv.IsMine)
             {
                 //내 닉네임 ui는 항상 보이게 유지
-                nicknameCanvas.gameObject.SetActive(true);
+                nicknameText.gameObject.SetActive(true);
             }
             //타인 캐릭터면
             else
             {
                 //암전이면 숨김, 해제면 다시 표시
-                nicknameCanvas.gameObject.SetActive(!isBlackout);
+                nicknameText.gameObject.SetActive(!isBlackout);
                 //isBlackout이 true면 !isBlackout = false -> Canvas 꺼짐(닉네임 숨김)
 
             }
@@ -150,42 +152,75 @@ public class SightSystemController : MonoBehaviour
     //GameStateManager에서 상태가 바뀌면 이벤트로 호출되는 함수
     private void HandleGameStateChanged(GameState state)
     {
+        // 폭죽이 터져있는 동안에는 상태 변경이 와도 무시 (폭죽이 우선)
+        if (isFireworkActive) return;
+
         // 새 상태가 '암전 상태(Playing_OffLight)'면 암전 연출 켜기
         if(state == offLightState) EnableBlackout();
         //그 외 암전 연출 끔
         else DisableBlackout();
     }
 
+    private void ApplyCurrentVisualState()
+    {
+        //폭죽 최우선
+        if (isFireworkActive)
+        {
+            ApplyFireworkVisual();
+            return;
+        }
+
+        if (isBlackout) ApplyBlackoutVisual();
+        else ApplyNormalVisual();
+    }
+
+    private void ApplyNormalVisual()
+    {
+        if(globalLight != null) globalLight.intensity = globalIntensity_Normal;
+        if(visionLight != null)
+        {
+            visionLight.intensity = visionIntensity_Normal;
+            SetLightRadius(visionLight, visionRadius_Normal);
+        }
+
+        if(grayscaleVolume != null) grayscaleVolume.weight = 0f;
+        HideOtherNicknames(false);
+    }
+
+    private void ApplyBlackoutVisual()
+    {
+        if(globalLight != null) globalLight.intensity = globalIntensity_Blackout;
+        if(visionLight != null)
+        {
+            visionLight.enabled = true;
+            visionLight.intensity = visionIntensity_OffLight;
+            SetLightRadius(visionLight, visionRadius_OffLight);
+        }
+
+        if(grayscaleVolume != null) grayscaleVolume.weight = 1f;
+        HideOtherNicknames(true);
+    }
+
+    private void ApplyFireworkVisual()
+    {
+        if(globalLight != null) globalLight.intensity = globalIntensity_Firework;
+        
+        // 폭죽 중에는 흑백 끔
+        if (grayscaleVolume != null) grayscaleVolume.weight = 0f;
+
+        // 폭죽 중 닉네임은 보이게
+        HideOtherNicknames(false);
+    }
+
 
     //암전 연출 ON: 전체 어둡게 + 시야 축소 + 흑백 켜기
     public void EnableBlackout()
     {
-        //이미 암전일 때
-        if (isBlackout) return;
+        if(isFireworkActive) return;
+        //if(isBlackout) return;
 
-        //암전 상태로 기록
-        isBlackout = true; 
-
-        //1) VisionLight 시야 축소
-        //visionlight 참조가 연결됐나 확인
-        if(visionLight != null)
-        {
-            //visionLight 켜기
-            visionLight.intensity = visionIntensity_OffLight;
-            //플레이어 주변 빛 반경 줄여서 내 주변만 보이도록 만듦
-            SetLightRadius(visionLight, visionRadius_OffLight);   
-        }
-
-        //2) 흑백 필터 ON(Volume 켜기)
-        //인스펙터 연결 확인
-        if(grayscaleVolume != null)
-            //볼륨 켜서 흑백 효과 적용
-            //grayscaleVolume.enabled = true;
-            grayscaleVolume.weight = 1f;
-
-        //3) 닉네임 숨김
-        HideOtherNicknames(true);
-        // (추후 Photon에서 내 것만 남기고 다른 사람 닉네임 끄는 로직을 여기에 넣을 수 있음)
+        isBlackout = true;
+        ApplyBlackoutVisual();
 
         // 디버그용 로그(상태 토글이 실제로 호출됐는지 확인 가능)
         Debug.Log("[SightSystemController] Blackout ENABLED"); 
@@ -193,32 +228,50 @@ public class SightSystemController : MonoBehaviour
 
     public void DisableBlackout()
     {
-        //암전 연출 OFF: 조명/시야/필터 원상복구
-        // 이미 암전이 꺼져 있으면 또 실행하지 않음
-        if (!isBlackout) return; 
+        if(isFireworkActive) return;
+        //if(!isBlackout) return;
 
-        // 암전 해제 상태로 기록
-        isBlackout = false; 
-
-        if (visionLight != null) // visionLight가 연결되어 있으면
-        {
-            //visionlight 끄기
-            visionLight.intensity = visionIntensity_Normal;
-            //시야 반경을 평소 값으로 복구(넓게)
-            SetLightRadius(visionLight, visionRadius_Normal);    
-        }
-            
-
-        if (grayscaleVolume != null) // 흑백 볼륨이 연결되어 있으면
-            // 흑백 효과 끄기(원래 색으로)
-            //grayscaleVolume.enabled = false;
-            grayscaleVolume.weight = 0f;
-            
-        HideOtherNicknames(false);
-        // 다른 사람 닉네임도 다시 켜기
+        isBlackout = false;
+        ApplyNormalVisual();
 
         Debug.Log("[SightSystemController] Blackout DISABLED"); 
         // 디버그용 로그
+    }
+
+    //폭죽
+    public void TriggerFirework(float duration)
+    {
+        // 중복 폭죽 방지: 기존 코루틴 끊고 새로 시작
+        if (fireworkCoroutine != null)
+        {
+            StopCoroutine(fireworkCoroutine);
+            fireworkCoroutine = null;
+        }
+
+        fireworkCoroutine = StartCoroutine(Co_Firework(duration));
+    }
+
+    private IEnumerator Co_Firework(float duration)
+    {
+        isFireworkActive = true;
+
+        ApplyFireworkVisual();
+        Debug.Log("[SightSystemController] Firework ENABLED");
+
+        yield return new WaitForSeconds(duration);
+
+        isFireworkActive = false;
+        fireworkCoroutine = null;
+
+        //폭죽 끝나면 현재 gamestate로 복귀
+        if(GameStateManager.instance != null)
+        {
+            //currentState가 OffLight면 EnableBlackout
+            HandleGameStateChanged(GameStateManager.instance.currentState);
+            ApplyCurrentVisualState();
+        }
+        
+        Debug.Log("[SightSystemController] Firework DISABLED");
     }
 
     //VisionLight 반경 값 바꾸는 함수
@@ -227,7 +280,5 @@ public class SightSystemController : MonoBehaviour
         // URP 2D Light2D는 타입이 뭐든(버전에 따라) 이 값이 반경 역할을 함
         light2D.pointLightOuterRadius = radius;
     }
-
-
 
 }
