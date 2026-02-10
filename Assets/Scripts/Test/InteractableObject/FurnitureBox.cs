@@ -3,7 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 
-public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer
+public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInteractable
 {
     
     [Header ("Item Data")]
@@ -14,6 +14,13 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer
     [SerializeField] private GameObject boxPanel; //[E]키 누르면 뜨는 팝업창 패널
     [SerializeField]public ItemSlot slotUI; //팝업창 패널안에 뜰 슬롯(IClickHandler) 제어하는 스크립트 부분
 
+    [Header("Hold 설정")]
+    [SerializeField] private float holdDuration = 1.5f;
+    public float HoldDuration => holdDuration;
+
+    [Header("Hold UI")]
+    [SerializeField] private GameObject holdUIRoot;
+    [SerializeField] private HoldGaugeUI holdGauge;
 
     private int interactPlayerNumber;
 
@@ -28,6 +35,12 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer
             boxPanel.SetActive(false);
         }
         if (interactUI != null) interactUI.gameObject.SetActive(false);
+
+        //(추가) 홀드 ui 초기화
+        if(holdUIRoot != null)
+            holdUIRoot.SetActive(false);
+        if(holdGauge != null)
+            holdGauge.ResetGauge();
     }
     public void ShowUI(bool show)
     {
@@ -59,6 +72,35 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer
     {
         if (this.itemData == null) return;
         photonView.RPC("RPC_RequestTakeItem", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.ActorNumber);
+    }
+
+    public void ShowHoldUI(bool show)
+    {
+        if(holdUIRoot != null)
+            holdUIRoot.SetActive(show);
+        
+        if(show && holdGauge != null)
+            holdGauge.ResetGauge();
+    }
+
+    public void SetHoldProgress(float t01)
+    {
+        if(holdGauge != null)
+            holdGauge.SetProgress(t01);
+    }
+
+    public void OnLockChanged_FromUnityEvent(bool locked, int byActor)
+    {
+        bool lockedByMe = locked && PhotonNetwork.LocalPlayer != null && byActor == PhotonNetwork.LocalPlayer.ActorNumber;
+        //다른 사람 점유 중이면 ui 닫기
+        if(locked && !lockedByMe)
+        {
+            ShowUI(false);
+            ShowHoldUI(false);
+
+            if(boxPanel != null && boxPanel.activeSelf)
+                boxPanel.SetActive(false);
+        }
     }
 
     [PunRPC]
