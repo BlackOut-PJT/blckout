@@ -74,6 +74,10 @@ MonoBehaviour:
   - RPC_Firework
   - RPC_ChangeToDeadBody
   - RPC_ShowCriminalTag
+  - RPC_LockDenied
+  - RPC_OnLockChanged
+  - RPC_ReleaseLock
+  - RPC_TryLock
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
