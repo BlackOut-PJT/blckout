@@ -7,6 +7,9 @@ public class PlayerInteraction : MonoBehaviourPun
 {
 
     public static PlayerInteraction instance;
+    //홀드 관련 변수 추가
+    private float holdTimer = 0f;//지금까지 누른 시간
+    private IHoldInteractable holdingTarget = null;//지금 홀드 중인 대상
 
     [Header("Raycast")]
     //레이캐스트 쏘는 최대 거리. 이 거리 안에 있는 물체만 상호작용
@@ -82,6 +85,8 @@ public class PlayerInteraction : MonoBehaviourPun
         //타겟이 바뀌었으면(플레이어가 이동하면서 ui 옮겨가야 함)
         if(newTarget != currentTarget)
         {
+            CancelHold();//타겟 바뀌면 홀드 취소
+
             //이전 타겟 ui 끔
             if(currentTarget != null)
                 currentTarget.ShowUI(false);
@@ -137,7 +142,21 @@ public class PlayerInteraction : MonoBehaviourPun
             return;
         }
 
-        if(currentTarget == null) return;
+        if(currentTarget == null) {
+            CancelHold();
+            return;
+        }
+
+        //현재 타겟이 홀드 가능한 오브젝트인지 확인
+        IHoldInteractable holdTarget = currentTarget as IHoldInteractable;
+
+        //홀드 대상일 경우
+        if(holdTarget != null)
+        {
+            HandleHold(holdTarget);
+            return;
+        }
+
         //이번 프레임에 상호작용 /ㅋㅋㅋㅋㅌ키(E) 눌렀으면 true
         if (Input.GetKeyDown(interactKey))
         {
@@ -149,6 +168,81 @@ public class PlayerInteraction : MonoBehaviourPun
             currentTarget.Interact(PhotonNetwork.LocalPlayer);
             //(추가) 현재 활성화된 대상으로 등록
             activeInteractable = currentTarget;
+        }
+    }
+
+    //홀드 처리용 함수
+    void HandleHold(IHoldInteractable target)
+    {
+        //target(FurnitureBox/CraftingBox 등)에서 PhtonLock 찾기
+        //mb가 널 아니면 PhtonLock 가져오기
+        MonoBehaviour mb = target as MonoBehaviour;
+        PhotonLock netLock = mb != null ? mb.GetComponent<PhotonLock>() : null;
+
+        //홀드 대상 바뀌면 초기화 + 락 요청
+        if(holdingTarget != target)
+        {
+            CancelHold();
+            holdingTarget = target;
+            holdingTarget.ShowHoldUI(true);
+
+            netLock?.RequestLock();//락 먼저 요청
+        }
+
+        //E키 누를 동안
+        if (Input.GetKey(interactKey))
+        {
+            //락이 내 것이 아니면 게이지 진행 금지
+            if(netLock != null && !netLock.IsLockedByMe)
+            {
+                target.SetHoldProgress(0f);
+                return;
+            }
+
+            holdTimer += Time.deltaTime;
+
+            //진행도 계산
+            float t01 = holdTimer / target.HoldDuration;
+            //게이지 ui 업뎃
+            target.SetHoldProgress(t01);
+            //홀드 완료 시
+            if(holdTimer >= target.HoldDuration)
+            {
+                target.ShowHoldUI(false);
+                target.SetHoldProgress(0f);
+
+                //기존 상호작용 실행
+                currentTarget.ShowUI(false);
+                currentTarget.Interact(PhotonNetwork.LocalPlayer);
+                activeInteractable = currentTarget;
+
+                netLock?.ReleaseLock();//완료 후 락 해제
+                CancelHold();
+            }
+        }
+
+        //중간에 키 뗐을 때도 락 해제 + 취소
+        if (Input.GetKeyUp(interactKey))
+        {
+            netLock?.ReleaseLock();
+            CancelHold();
+        }
+    }
+
+    //홀드 취소 및 초기화
+    void CancelHold()
+    {
+        holdTimer = 0f;
+
+        if(holdingTarget != null)
+        {
+            MonoBehaviour mb = holdingTarget as MonoBehaviour;
+            PhotonLock netLock = mb != null ? mb.GetComponent<PhotonLock>() : null;
+            netLock?.ReleaseLock();
+            
+            holdingTarget.SetHoldProgress(0f);//게이지 리셋
+            holdingTarget.ShowHoldUI(false);
+            holdingTarget = null;
         }
     }
 
