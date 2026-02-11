@@ -86,7 +86,7 @@ public class InventoryModel : MonoBehaviourPunCallbacks
     {
         ItemData dropItem = this.item;
 
-        this.item = null;
+        items.RemoveAt(0);
         OnInventoryChanged?.Invoke();
 
         return dropItem;
