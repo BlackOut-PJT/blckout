@@ -88,8 +88,16 @@ public class PlayerInteraction : MonoBehaviourPun
             CancelHold();//타겟 바뀌면 홀드 취소
 
             //이전 타겟 ui 끔
-            if(currentTarget != null)
-                currentTarget.ShowUI(false);
+            //!!수정!! 만약 상호작용하는 대상이 사라졌으면 (시체/바닥에 떨어진 아이템이면) currentTarget 아니도록
+            //방어코드 작성
+            if(currentTarget != null && (currentTarget as Object) != null)
+            {
+                try
+                {
+                    currentTarget.ShowUI(false);
+                }
+                catch (MissingReferenceException) {}
+            }
             //현재 타겟을 새 타겟으로 교체
             currentTarget = newTarget;
             //새 타겟 ui 켬

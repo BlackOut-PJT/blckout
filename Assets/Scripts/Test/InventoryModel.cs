@@ -9,7 +9,7 @@ public class InventoryModel : MonoBehaviourPunCallbacks
 {
     public static InventoryModel instance;
 
-    //플레이어 인벤토리 모델이 생서된 것을 알리는 정적 이벤트
+    //플레이어 인벤토리 모델이 생성된 것을 알리는 정적 이벤트
     //매개변수로 자기자신(InventoryModel)을 넘겨줌
     public static event Action<InventoryModel> OnPlayerSpawned;
 
@@ -82,12 +82,14 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         }
     }
 
-    public void RemoveItem(ItemData target)
+    public ItemData DropItem() 
     {
-        if (items.Remove(target))
-        {
-            OnInventoryChanged?.Invoke();
-        }
+        ItemData dropItem = this.item;
+
+        items.RemoveAt(0);
+        OnInventoryChanged?.Invoke();
+
+        return dropItem;
     }
 
     ////useitem 추가

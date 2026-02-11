@@ -597,10 +597,54 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5392885324650867117, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1419381550283157397, guid: 593043c0ef89ab34dbb400baf86041b2, type: 3}
+    - target: {fileID: 5392885324650867117, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5392885324650867117, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5392885324650867117, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5392885324650867117, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6846536692566197723, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Color.b
+      value: 0.59741014
+      objectReference: {fileID: 0}
+    - target: {fileID: 6846536692566197723, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Color.g
+      value: 0.59741014
+      objectReference: {fileID: 0}
+    - target: {fileID: 6846536692566197723, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7075472
+      objectReference: {fileID: 0}
+    - target: {fileID: 6846536692566197723, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6994092082465601140, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -3632714717440065908, guid: 8490d1470c3a644a0b06299224a476dc, type: 2}
     - target: {fileID: 7201252073548507919, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 58955723}
+    - target: {fileID: 7237774882397212667, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -3632714717440065908, guid: 8490d1470c3a644a0b06299224a476dc, type: 2}
     - target: {fileID: 7652474470769392145, guid: 5ef8d961b6f87634d836e1d352ccd783, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

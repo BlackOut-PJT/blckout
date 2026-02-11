@@ -152,18 +152,25 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public void Die()
     {
+        if (photonView.IsMine)
+        {
+            Vector3 randomPos = transform.position;
+            ItemData dropItem = InventoryModel.instance.DropItem();
+            if (dropItem != null) photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
+        }
+
         Debug.Log($"{photonView.Owner.NickName} 사망!");
         photonView.RPC("RPC_ChangeToDeadBody", RpcTarget.All);
+    }
 
-        /*
-        if (spriteRenderer != null)
-        {
-            playerNameText.color = Color.red;
-            Color color = spriteRenderer.color;
-            color.a = 0.5f; //반투명
-            spriteRenderer.color = color;
-        }
-        */
+    [PunRPC]
+    void RPC_DropItems(int itemID, Vector3 randomPos)
+    {
+        //FieldItem 생성 로직 -> object 사용해서 ID 전달
+        object[] data = new object[] {itemID};
+
+        //플레이어가 나가도 아이템이 남아야하기 때문에 RoomObject로 생성하기
+        PhotonNetwork.InstantiateRoomObject("FieldItemPrefab", randomPos, Quaternion.identity, 0, data);
     }
 
     // 모든 플레이어들에게 죽은 플레이어가 시체로 보이게

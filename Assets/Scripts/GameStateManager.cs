@@ -23,11 +23,14 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject votingPanel;
     public Light2D globalLight;
     public TextMeshProUGUI resultText; //결과출력창 (임시)
+    public NotifyUI notificationSystem; //메시지 출력 UI
 
     [Header("설정")]
     public const float gameTime = 1800.0f; // 수정 못하게 상수로 변경
     public float blackoutDelay;
     public float votingTime = 120.0f;
+    public int maxMeetingCount = 1; //플레이어당 최대 회의 소집 횟수 
+    private const string MEETING = "MeetingCount"; //상수 키값 (CustomProperties)
     #endregion
 
     #region 내부 변수
@@ -217,15 +220,49 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         else timerText.text = "0";
     }
 
+    public void MeetingButtonPressed(Player interacter)
+    {   
+        if (currentState != GameState.Playing_OnLight && currentState != GameState.Playing_OffLight) return;
+        
+        int currentCount = GetPlayerMeetingCount(interacter);
+        if (currentCount >= maxMeetingCount) {
+            notificationSystem.ShowMessage("투표 소집은 플레이어당 한 번만 가능합니다.");
+            return;
+        }
+        
+       photonView.RPC("RPC_RequestMeeting", RpcTarget.MasterClient, interacter);
+    }
+
     [PunRPC]
-    public void RPC_RequestMeeting()
+    public void RPC_RequestMeeting(Player interacter)
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        if (currentState == GameState.Voting) return;
+
+        //2차 검사
+        int currentCount = GetPlayerMeetingCount(interacter);
+        if (currentCount >= maxMeetingCount) return;
+
+        //회의 소집 가능 횟수 관련 CustomProperties 업데이트
+        Hashtable props = new Hashtable {{MEETING, currentCount + 1}};
+        interacter.SetCustomProperties(props);
+
         StartMeeting();
+    }
+
+    //플레이어의 현재 투표 소집 사용횟수 가져오는 함수
+    private int GetPlayerMeetingCount (Player player)
+    {
+        if (player.CustomProperties.ContainsKey(MEETING))
+            return (int) player.CustomProperties[MEETING];
+        return 0; //키가 없으면 0번 사용한 것.
     }
 
     // 투표 회의 시작&종료 로직
     public void StartMeeting()
     {
+        Debug.Log("회의 소집 시작");
         if (currentState == GameState.Voting) return;
 
         double endTime = PhotonNetwork.Time + votingTime;
@@ -243,6 +280,16 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         else nextState = GameState.Playing_OnLight;
 
         photonView.RPC("RPC_SetGameState", RpcTarget.All, nextState, 0.0);
+    }
+
+    //투표 횟수 초기화용 함수
+    public void ResetMeetingCounts()
+    {
+        foreach (Player p in PhotonNetwork.PlayerList)
+        {
+            Hashtable props = new HashTable {{MEETING, 0}};
+            p.SetCustomProperties(props);
+        }
     }
 
     #endregion
@@ -272,6 +319,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             globalLight.color = Color.darkGray;
         }
     }
+
     #endregion
 
 

@@ -553,7 +553,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1941088711
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 6262887080135211761, guid: d399d485d1081c04ba7be88d078b9334, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -768,7 +768,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de7c871cee3c7492f844fbfd4561547b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryModel
-  item: {fileID: 0}
+  items: []
+  maxSlots: 1
 --- !u!114 &7521883857017415067
 MonoBehaviour:
   m_ObjectHideFlags: 0

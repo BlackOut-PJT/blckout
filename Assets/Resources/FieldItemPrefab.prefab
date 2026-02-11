@@ -114,10 +114,10 @@ GameObject:
   - component: {fileID: 7558234752291578807}
   - component: {fileID: 1276027070363143043}
   - component: {fileID: 6132092772989818732}
-  - component: {fileID: 8979210028093475057}
   - component: {fileID: 7794705114064658770}
+  - component: {fileID: 2896750651262719879}
   m_Layer: 6
-  m_Name: FireworkObject
+  m_Name: FieldItemPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -237,21 +237,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!114 &8979210028093475057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7062175535144326600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e6a488138bb2456ab2eb7a06204a8f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FieldFireWork
-  itemData: {fileID: 11400000, guid: 8623a25ed4b1f452eb330aa6b55f3291, type: 2}
-  interactText: {fileID: 6984994726312089446}
-  spriteRenderer: {fileID: 0}
 --- !u!58 &7794705114064658770
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -288,6 +273,20 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: -0.025015414}
   m_Radius: 0.5250155
+--- !u!114 &2896750651262719879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7062175535144326600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f631b711cf04555b71b6401b47fd16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FieldItem
+  spriteRenderer: {fileID: 7558234752291578807}
+  interactText: {fileID: 6984994726312089446}
 --- !u!1 &7453031976724050840
 GameObject:
   m_ObjectHideFlags: 0

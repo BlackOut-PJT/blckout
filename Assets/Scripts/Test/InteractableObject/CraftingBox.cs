@@ -155,10 +155,16 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer
             if (!state) return;
         }
 
-        //1. 아이템 드랍 (방장이 생성 -> RoomObject라 모두에게 보임)
+        int fireworkID = 3;
+        object[] data = new object[] {fireworkID};
+
         Vector3 dropPos = spawnPoint.position;
         dropPos += (Vector3)(Random.insideUnitCircle * 0.2f);
-        PhotonNetwork.InstantiateRoomObject(craftResultPrefabName, dropPos, Quaternion.identity);
+        PhotonNetwork.InstantiateRoomObject(craftResultPrefabName, dropPos, Quaternion.identity, 0, data);
+        //1. 아이템 드랍 (방장이 생성 -> RoomObject라 모두에게 보임)
+        // Vector3 dropPos = spawnPoint.position;
+        // dropPos += (Vector3)(Random.insideUnitCircle * 0.2f);
+        // PhotonNetwork.InstantiateRoomObject(craftResultPrefabName, dropPos, Quaternion.identity);
 
         for (int i=0; i<slotStates.Length; i++)
         {

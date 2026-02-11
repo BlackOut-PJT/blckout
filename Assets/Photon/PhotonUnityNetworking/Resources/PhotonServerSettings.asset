@@ -78,6 +78,9 @@ MonoBehaviour:
   - RPC_OnLockChanged
   - RPC_ReleaseLock
   - RPC_TryLock
+  - RPC_DropItems
+  - GetItem
+  - RPC_OnDieVisual
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -156,7 +156,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
 
         Debug.Log($"[디버그] 현재 인원: {curPlayerCnt} / 최대 인원: {maxPlayer}");
 
-        if (curPlayerCnt == maxPlayer)
+        if (curPlayerCnt <= maxPlayer)
         {
             // 모두 준비 상태인지 확인
             foreach (Player p in PhotonNetwork.PlayerList)
@@ -182,7 +182,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         {
             // 게임 시작 시 더 이상 다른 사람이 방으로 못 들어오게 막기
             PhotonNetwork.CurrentRoom.IsOpen = false;
-            PhotonNetwork.LoadLevel("Test_Scene_Killing");
+            PhotonNetwork.LoadLevel("TestScene_Main");
         }
     }
 }
