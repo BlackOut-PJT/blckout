@@ -55,6 +55,26 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer
         PlayerInteraction.instance.SetInteractTarget(this);
         ShowPanel(true);
         RefreshAllSlots();
+
+        // 자동 투입: 들고 있는 아이템이 재료와 일치하면 바로 넣기
+        TryAutoDeposit();
+    }
+
+    private void TryAutoDeposit()
+    {
+        if (InventoryModel.instance == null) return;
+        ItemData heldItem = InventoryModel.instance.item;
+        if (heldItem == null) return;
+
+        for (int i = 0; i < requiredIngredients.Length; i++)
+        {
+            if (requiredIngredients[i].itemID == heldItem.itemID && slotStates[i] == false)
+            {
+                photonView.RPC("RPC_UpdateSlot", RpcTarget.All, i, true);
+                InventoryModel.instance.RemoveItem();
+                return;
+            }
+        }
     }
 
     public void ShowPanel (bool show)
@@ -81,6 +101,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer
     public void TryRetrieveItem (int slotIndex)
     {
         if (slotStates[slotIndex] == false) return;
+        if (InventoryModel.instance != null && InventoryModel.instance.IsFull) return;
 
         ItemData itemToReturn = requiredIngredients[slotIndex];
         InventoryModel.instance.AddItem(itemToReturn);

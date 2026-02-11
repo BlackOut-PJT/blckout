@@ -37,6 +37,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     private float currentGameTime;
     private int loadedPlayerCnt = 0;
     public bool isGameStart = false;
+    [HideInInspector] public bool skipWinCondition = false;
 
     //투표용 변수
     private double votingEndTime;
@@ -162,6 +163,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public WhoWin CheckWinCondition()
     {
+        if (skipWinCondition) return WhoWin.None;
+
         // 생존자 승리: 게임 시작 다 지나면 or 살인마 검거
         // 살인마 승리: 생존자 전멸
 

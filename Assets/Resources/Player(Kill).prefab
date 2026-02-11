@@ -628,4 +628,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de7c871cee3c7492f844fbfd4561547b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryModel
-  item: {fileID: 0}
+  items: []
+  maxSlots: 1
