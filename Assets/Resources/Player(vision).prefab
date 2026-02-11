@@ -411,7 +411,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1941088711
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 6262887080135211761, guid: d399d485d1081c04ba7be88d078b9334, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -531,6 +531,8 @@ MonoBehaviour:
   anim: {fileID: 4759798488319899073}
   playerNameText: {fileID: 681458995536563191}
   spriteRenderer: {fileID: 1019082888017080490}
+  deadSprite: {fileID: 0}
+  deadSortingOrder: 0
 --- !u!114 &7845184699515015971
 MonoBehaviour:
   m_ObjectHideFlags: 0
