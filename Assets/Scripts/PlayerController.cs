@@ -56,7 +56,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         // 1.내 캐릭터 아니면 조종X
         if (!photonView.IsMine) return;
 
-        // 2.게임 상태 체크 + 게임 시작 하였는지 체크
+        // 2.내 캐릭터 생존여부 파악
+        if(GameUtils.IsMyPlayerDead) return;
+
+        // 3.게임 상태 체크 + 게임 시작 하였는지 체크
         if (GameStateManager.instance.isGameStart == false || GameStateManager.instance.currentState == GameState.Voting)
         {
             moveInput = Vector2.zero;

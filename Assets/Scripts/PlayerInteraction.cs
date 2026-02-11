@@ -39,6 +39,7 @@ public class PlayerInteraction : MonoBehaviourPun
     private void Update()
     {
         if (!photonView.IsMine) return;
+        if (GameUtils.IsMyPlayerDead) return; // 상호작용 전 생존여부 파악
         
         //현재 입력 기반으로 바라보는 방향(lookDir) 갱신
         UpdateLookDirection();

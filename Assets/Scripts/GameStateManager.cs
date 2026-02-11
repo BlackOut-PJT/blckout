@@ -131,6 +131,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
 
+        if(GameUtils.IsMyPlayerDead) return; // 투표 소집 전 생존여부 파악
+
         // 3. 투표 시작 요청(우선은 M키 누르면 시작되게)
         if (Input.GetKeyDown(KeyCode.M))
         {
