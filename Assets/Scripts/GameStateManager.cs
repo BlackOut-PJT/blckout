@@ -40,6 +40,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     private float currentGameTime;
     private int loadedPlayerCnt = 0;
     public bool isGameStart = false;
+    [HideInInspector] public bool skipWinCondition = false;
 
     //투표용 변수
     private double votingEndTime;
@@ -58,21 +59,21 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     void Start()
     {
         //isGameStart = true;
-        /*#region 테스트용 코드
+        #region 테스트용 코드
         if (PhotonNetwork.IsConnectedAndReady)
         {
             resultText.text = "";
 
             // 1. 인게임씬에 캐릭터 생성하기 위한 코드
             Vector2 randomPos = Random.insideUnitCircle * 2.0f;
-            PhotonNetwork.Instantiate("Player(Test)", randomPos, Quaternion.identity);
+            PhotonNetwork.Instantiate("Player(Kill)", randomPos, Quaternion.identity);
 
             // 2. 상태 초기화
             Hashtable props = new Hashtable();
             props.Add("IsDead", false);
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
-        #endregion*/
+        #endregion
 
         blackoutDelay = Random.Range(30f, 60f); // 30초->30~60초 랜덤으로 변경
         currentGameTime = gameTime;
@@ -165,6 +166,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public WhoWin CheckWinCondition()
     {
+        if (skipWinCondition) return WhoWin.None;
+
         // 생존자 승리: 게임 시작 다 지나면 or 살인마 검거
         // 살인마 승리: 생존자 전멸
 

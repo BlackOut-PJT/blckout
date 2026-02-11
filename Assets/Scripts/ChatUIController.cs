@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
+using Photon.Pun;
 
 public class ChatUIController : MonoBehaviour
 {
@@ -53,12 +54,27 @@ public class ChatUIController : MonoBehaviour
         bool next = !chatPanelRoot.activeSelf;
         chatPanelRoot.SetActive(next);
 
-        if (next && inputField != null)
+        bool dead = IsLocalPlayerDead();
+        if (inputField != null) inputField.interactable = !dead;
+        if (sendButton != null) sendButton.interactable = !dead;
+
+        if (next && inputField != null && !dead)
             inputField.ActivateInputField();
+    }
+
+    private bool IsLocalPlayerDead()
+    {
+        if (PhotonNetwork.LocalPlayer == null) return false;
+        object val;
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsDead", out val))
+            return (bool)val;
+        return false;
     }
 
     private void OnSend()
     {
+        if (IsLocalPlayerDead()) return;
+
         if (lobbyChat == null)
         {
             Debug.LogError("[ChatUI] lobbyChat is null. Check scene reference!");

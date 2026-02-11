@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3eef0720e8471e943865dc66919f6827
+guid: 949fd4bf35b6471479478d304dd53016
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2326767721487111395
-    second: 447_0
+      213: 1501117148009153395
+    second: 605_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 48
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -139,31 +139,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Btn_brown_0
+      name: 605_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 432
-        height: 432
+        x: 11
+        y: 10
+        width: 40
+        height: 32
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 110, z: 0, w: 111}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
-      outline:
-      - - {x: 0, y: -216}
-        - {x: 216, y: 0}
-        - {x: 0, y: 216}
-        - {x: -216, y: 0}
-      physicsShape:
-      - - {x: 0, y: -216}
-        - {x: 216, y: 0}
-        - {x: 0, y: 216}
-        - {x: -216, y: 0}
-      tessellationDetail: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
       bones: []
-      spriteID: 0347ae453f84fb0469c6f1b473e48427
-      internalID: -1083413174
+      spriteID: 3734555c71a05d410800000000000000
+      internalID: 1501117148009153395
       vertices: []
       indices: 
       edges: []
@@ -172,7 +164,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4783238c40dc6de4598a2cf12089e7da
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -180,13 +172,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceOnImport
-        value: False
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":432.0,"y":432.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Btn_brown_0: -1083413174
+      605_0: 1501117148009153395
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

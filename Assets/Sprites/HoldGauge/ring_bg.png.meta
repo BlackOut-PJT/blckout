@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 3eef0720e8471e943865dc66919f6827
+guid: 1806fbd40a701f949b96ac98f8c935d6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2326767721487111395
-    second: 447_0
+      213: -6631631217889516846
+    second: ring_bg_0
+  - first:
+      213: -7112453152978529844
+    second: ring_bg_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +40,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -46,12 +49,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 48
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +78,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -139,31 +142,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Btn_brown_0
+      name: ring_bg_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 3
         y: 0
-        width: 432
-        height: 432
+        width: 753
+        height: 1024
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 110, z: 0, w: 111}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
-      outline:
-      - - {x: 0, y: -216}
-        - {x: 216, y: 0}
-        - {x: 0, y: 216}
-        - {x: -216, y: 0}
-      physicsShape:
-      - - {x: 0, y: -216}
-        - {x: 216, y: 0}
-        - {x: 0, y: 216}
-        - {x: -216, y: 0}
-      tessellationDetail: 0
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
       bones: []
-      spriteID: 0347ae453f84fb0469c6f1b473e48427
-      internalID: -1083413174
+      spriteID: 2d2ed401b86b7f3a0800000000000000
+      internalID: -6631631217889516846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ring_bg_1
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 622
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc19b1f6a8d7b4d90800000000000000
+      internalID: -7112453152978529844
       vertices: []
       indices: 
       edges: []
@@ -172,7 +189,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 4783238c40dc6de4598a2cf12089e7da
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -180,13 +197,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceOnImport
-        value: False
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":432.0,"y":432.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Btn_brown_0: -1083413174
+      ring_bg_0: -6631631217889516846
+      ring_bg_1: -7112453152978529844
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
