@@ -230,7 +230,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
         
-       photonView.RPC("RPC_RequestMeeting", RpcTarget.MasterClient, interacter);
+        photonView.RPC("RPC_RequestMeeting", RpcTarget.MasterClient, interacter);
     }
 
     [PunRPC]
