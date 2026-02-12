@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -45,6 +46,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 cam.target = this.transform;
             }
+
+            // 혹시 모르니 Start()에서 IsDead false로 저장.
+            Hashtable startProps = new Hashtable();
+            startProps.Add("IsDead", false);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(startProps);
         }
         #endregion
 

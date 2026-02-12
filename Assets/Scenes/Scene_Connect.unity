@@ -463,7 +463,7 @@ MonoBehaviour:
   RoomNameInput: {fileID: 340586278}
   roomListParent: {fileID: 739449219}
   roomItemPrefab: {fileID: 6660888726507382034, guid: 40fe41baeee967846a1a767451783e96, type: 3}
-  maxPlayers: 3
+  maxPlayers: 2
 --- !u!4 &645396683
 Transform:
   m_ObjectHideFlags: 0

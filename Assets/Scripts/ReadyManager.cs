@@ -21,6 +21,13 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         // 방장이 씬 로딩하면 나머지 플레이어도 자동으로 따라가게 설정
         PhotonNetwork.AutomaticallySyncScene = true;
 
+        // 로비에 들어오면 커스텀 프로퍼티 정보들 모두 초기화
+        Hashtable props = new Hashtable();
+        props.Add("IsDead", false);
+        props.Add("Job", "None"); // 직업 기본값은 None 추가
+        props.Add("IsReady", false);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+
         // 버튼 이벤트 리스너 등록
         readyButton.onClick.AddListener(OnClickReadyButton);
         leaveButton.onClick.AddListener(OnClickLeaveButton);

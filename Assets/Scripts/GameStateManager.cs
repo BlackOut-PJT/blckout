@@ -1,3 +1,5 @@
+using System;
+using Random = UnityEngine.Random;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering.Universal;
@@ -48,6 +50,9 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
     // 승리 조건 체크용 변수
     public enum WhoWin { None = 0, SurvivorWin = 10, KillerWin = 20 }
+
+    // 게임 종료 이벤트
+    public event Action OnGameEnded;
 
     #endregion
 
@@ -193,6 +198,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
                 string job = (string)jobObject;
                 if (job == "Survivor") survivorCount++;
                 else if (job == "Killer") killerCount++;
+                else notYetCnt++; // 직업이 "None"인 플레이어는 여기로 카운트
             }
             else notYetCnt++;
         }
@@ -393,6 +399,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         currentState = GameState.Result;
         isGameStart = false; // 플레이어 움직임 봉쇄
+        OnGameEnded?.Invoke(); // 게임 종료 이벤트 구독 대상들에게 이벤트 알림
 
         // 결과 텍스트 띄우기
         if (resultText != null)

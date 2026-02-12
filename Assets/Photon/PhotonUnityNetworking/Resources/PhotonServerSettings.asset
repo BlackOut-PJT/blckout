@@ -81,6 +81,7 @@ MonoBehaviour:
   - RPC_DropItems
   - GetItem
   - RPC_OnDieVisual
+  - RPC_MoveToLobby
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
