@@ -61,6 +61,9 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer, IHoldIn
             if (slotUI != null) slotUI.Initialize(this, itemData);
         }
         boxPanel.SetActive(show);
+
+        if(!show)
+            GetComponent<PhotonLock>()?.ReleaseLock();
     }
 
     public void AddItem(ItemData item)
@@ -99,7 +102,7 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer, IHoldIn
             ShowHoldUI(false);
 
             if(boxPanel != null && boxPanel.activeSelf)
-                boxPanel.SetActive(false);
+                ShowPanel(false);//boxPanel.SetActive(false);
         }
     }
 
