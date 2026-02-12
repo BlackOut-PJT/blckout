@@ -198,6 +198,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
                 string job = (string)jobObject;
                 if (job == "Survivor") survivorCount++;
                 else if (job == "Killer") killerCount++;
+                else notYetCnt++; // 직업이 "None"인 플레이어는 여기로 카운트
             }
             else notYetCnt++;
         }
