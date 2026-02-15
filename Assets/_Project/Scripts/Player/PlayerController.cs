@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         #region 맵 테스트용 임시 코드
         if (photonView.IsMine)
         {
+            playerNameText.color = Color.green;
             CameraFollow cam = Camera.main.GetComponent<CameraFollow>();
             if (cam != null)
             {
@@ -152,10 +153,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 playerNameText.color = Color.red; // 킬러면 빨간색
             }
-            else
-            {
-                playerNameText.color = Color.black; // 생존자면 검정색
-            }
+            //일반인 닉네임 검정색 설정은 다른데에서 해서 + 초록색 설정 안 덮어쓰도록 이 부분은 삭제함
         }
     }
 
