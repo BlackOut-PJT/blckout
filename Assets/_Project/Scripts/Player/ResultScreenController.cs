@@ -1,12 +1,16 @@
 using Photon.Pun;
 using Photon.Realtime;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class ReloadBtnController : MonoBehaviourPunCallbacks
+public class ResultScreenController : MonoBehaviourPunCallbacks
 {
+    [Header("UI")]
+    [SerializeField] private GameObject resultPanel; // 결과창 패널
+    [SerializeField] private TextMeshProUGUI resultText; // 결과 텍스트
     [SerializeField] private Button reloadButton; // 재시작 버튼
 
     void Start()

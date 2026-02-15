@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/_Project/Scenes/TestScenes/TestScene_Kill.unity
     guid: 719bf495e1007b746be28ce752af07a9
+  - enabled: 1
+    path: Assets/_Project/Scenes/TestScenes/TestScene_Result.unity
+    guid: 19c49fe2ee3f57443873ac16ed95e932
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
