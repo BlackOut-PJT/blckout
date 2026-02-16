@@ -52,7 +52,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     public enum WhoWin { None = 0, SurvivorWin = 10, KillerWin = 20 }
 
     // 게임 종료 이벤트
-    public event Action OnGameEnded;
+    public event Action<WhoWin> OnGameEnded;
 
     #endregion
 
@@ -72,7 +72,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
             // 1. 인게임씬에 캐릭터 생성하기 위한 코드
             Vector2 randomPos = Random.insideUnitCircle * 2.0f;
-            PhotonNetwork.Instantiate("Player(main)", randomPos, Quaternion.identity);
+            PhotonNetwork.Instantiate("Player(main1)", randomPos, Quaternion.identity);
 
             // 2. 상태 초기화
             Hashtable props = new Hashtable();
@@ -399,15 +399,11 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         currentState = GameState.Result;
         isGameStart = false; // 플레이어 움직임 봉쇄
-        OnGameEnded?.Invoke(); // 게임 종료 이벤트 구독 대상들에게 이벤트 알림
 
-        // 결과 텍스트 띄우기
-        if (resultText != null)
-        {
-            resultText.gameObject.SetActive(true);
-            if (winner == WhoWin.SurvivorWin) resultText.text = "SURVIVOR WIN!";
-            else resultText.text = "KILLER WIN!";
-        }        
+        // 매개변수로 winner 정보 넘겨주기
+        OnGameEnded?.Invoke(winner); // 게임 종료 이벤트 구독 대상들에게 이벤트 알림
+
+        // 결과 텍스트 띄우기는 삭제
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
