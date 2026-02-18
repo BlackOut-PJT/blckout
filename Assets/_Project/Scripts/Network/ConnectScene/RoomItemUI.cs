@@ -40,6 +40,7 @@ public class RoomItemUI : MonoBehaviour
     //참여하기 버튼 클릭 시 호출
     public void OnJoinButtonClicked()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         if(string.IsNullOrEmpty(cachedRoomName)) return;
         
         string nick = PlayerPrefs.GetString("PLAYER_NICKNAME", "").Trim();

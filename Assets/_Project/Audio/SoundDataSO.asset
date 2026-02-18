@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e4e645a8c22f4fe49e7ea641a32ecc7, type: 3}
+  m_Name: SoundDataSO
+  m_EditorClassIdentifier: Assembly-CSharp::SoundDataSO
+  soundEntries:
+  - name: ButtonClick
+    clip: {fileID: 8300000, guid: 053adb75a62c948e19a73cb00c193973, type: 3}
+  - name: OpeningDrawer
+    clip: {fileID: 8300000, guid: b69767a3180ad4fe0af91ca561b61783, type: 3}
+  - name: DeadPopNoise
+    clip: {fileID: 8300000, guid: 257e7f8d23b2d427e85459717f9b2d77, type: 3}
+  - name: DetectDeadBody
+    clip: {fileID: 8300000, guid: 32e1c164ea40d4eb596b9964c6043a7a, type: 3}
+  - name: FireworkNoise
+    clip: {fileID: 8300000, guid: 039752f43b3f040dea320878ea64383c, type: 3}
+  - name: KnifeSwifting
+    clip: {fileID: 8300000, guid: 97c98a0019de04c97a6f45f38a21675d, type: 3}
+  - name: Walking
+    clip: {fileID: 8300000, guid: 3669e5ceda97845cba8c9c60c0820aa2, type: 3}
+  - name: CraftingEffect
+    clip: {fileID: 8300000, guid: 3f7c55cd0ec0c4f27a7856f15cbefd4c, type: 3}
+  - name: PuttingDownObject
+    clip: {fileID: 8300000, guid: 3c698159da5ca4451847ea1b8d31950f, type: 3}
+  - name: BGM
+    clip: {fileID: 8300000, guid: 76fe7cb3d633046e3a8dac6c34fe584f, type: 3}

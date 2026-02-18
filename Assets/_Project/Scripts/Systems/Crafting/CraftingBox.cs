@@ -188,6 +188,8 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
     //조합하기 버튼 클릭시 실행되는 함수
     public void OnClickCraft()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
+        SoundManager.instance.SFXPlay("CraftingEffect");
         //버튼 비활성화해서 중복 클릭 방지
         if (craftButton != null) craftButton.interactable = false;
 
@@ -212,6 +214,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
         int resultID = 3;
         object[] initData = new object[]{resultID};
         PhotonNetwork.InstantiateRoomObject(craftResultPrefabName, dropPos, Quaternion.identity, 0, initData);
+        SoundManager.instance.SFXPlay("PuttingDownObject");
 
         for (int i=0; i<slotStates.Length; i++)
         {

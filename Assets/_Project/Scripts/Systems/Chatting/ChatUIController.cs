@@ -45,6 +45,7 @@ public class ChatUIController : MonoBehaviour
 
     public void ToggleChatPanel()
     {
+        SoundManager.instance.SFXPlay("ButtonClick");
         if (chatPanelRoot == null)
         {
             Debug.LogWarning("[ChatUI] chatPanelRoot is null");

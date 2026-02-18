@@ -96,6 +96,8 @@ public class KillBtnController : MonoBehaviourPunCallbacks
 
     public bool Attack()
     {
+        SoundManager.instance.SFXPlay("KnifeSwifting");
+
         PlayerController targetScript = null; // PlayerController.cs를 가져오기 위해
         GameObject myPlayer = null;
         GameObject closestPlayer = null;

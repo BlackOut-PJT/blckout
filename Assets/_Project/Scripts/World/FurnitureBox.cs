@@ -22,6 +22,9 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer, IHoldIn
     [SerializeField] private GameObject holdUIRoot;
     [SerializeField] private HoldGaugeUI holdGauge;
 
+    //사운드 설정
+    private string audioClipName = "OpeningDrawer";
+
     private int interactPlayerNumber;
 
 
@@ -59,6 +62,7 @@ public class FurnitureBox : MonoBehaviourPun, IInteractable, IContainer, IHoldIn
         if (show)
         {
             if (slotUI != null) slotUI.Initialize(this, itemData);
+            SoundManager.instance.SFXPlay(audioClipName);
         }
         boxPanel.SetActive(show);
 

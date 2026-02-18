@@ -28,6 +28,7 @@ public class FireworkRpcRelay : MonoBehaviourPun
     {
         if(!PhotonNetwork.InRoom) return;
 
+        SoundManager.instance.SFXPlay("FireworkNoise");
         //duration 음수면 기본값
         if(duration <= 0f) duration = defaultDuration;
 

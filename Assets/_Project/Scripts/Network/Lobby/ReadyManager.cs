@@ -20,6 +20,8 @@ public class ReadyManager : MonoBehaviourPunCallbacks
     {
         // 방장이 씬 로딩하면 나머지 플레이어도 자동으로 따라가게 설정
         PhotonNetwork.AutomaticallySyncScene = true;
+        SoundManager.instance.BGMPlay();
+        Debug.Log("BGM재생");
 
         // 로비에 들어오면 커스텀 프로퍼티 정보들 모두 초기화
         Hashtable props = new Hashtable();
@@ -38,6 +40,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
 
     public void OnClickReadyButton()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         // 버튼을 누른 로컬 플레이어 가져오기
         Player localPlayer = PhotonNetwork.LocalPlayer;
         bool isReady = false;
@@ -60,6 +63,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
 
     public void OnClickLeaveButton()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         PhotonNetwork.LeaveRoom();
     }
 
@@ -185,6 +189,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         if (PhotonNetwork.IsMasterClient)
         {
             // 게임 시작 시 더 이상 다른 사람이 방으로 못 들어오게 막기

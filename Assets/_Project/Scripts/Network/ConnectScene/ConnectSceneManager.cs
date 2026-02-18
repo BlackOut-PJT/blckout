@@ -259,6 +259,7 @@ public class ConnectSceneManager : MonoBehaviour
     //뒤로가기 버튼 클릭 처리
     private void OnClickBack()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         Debug.Log("[UI] Back clicked");
         SceneManager.LoadScene("Scene_Title");
     }
@@ -266,6 +267,7 @@ public class ConnectSceneManager : MonoBehaviour
     //설정 버튼 클릭 처리(현재는 로그만)
     private void OnClickSettings()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         Debug.Log("[UI] Settings clicked");
         //여기서 설정 팝업 열기 처리해야 함
     }
@@ -273,6 +275,7 @@ public class ConnectSceneManager : MonoBehaviour
     //Start 버튼 클릭 처리: 닉네임 저장 + NetworkManager.Connect 호출
     private void OnClickStart()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         //닉네임 저장 실패하면(빈 값이면) 진행 중단
         if (!SaveNickName()) return;
 
@@ -285,6 +288,7 @@ public class ConnectSceneManager : MonoBehaviour
     //방 만들기 버튼 클릭: 팝업 열기(+ 연결 보장)
     private void OpenCreateRoomPopup()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         //닉네임 저장 실패하면 진행 중단
         if (!SaveNickName()) return;
 
@@ -310,6 +314,7 @@ public class ConnectSceneManager : MonoBehaviour
     //팝업 닫기
     private void CloseCreateRoomPopup()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         if (ui.createRoomPopup != null)
             ui.createRoomPopup.SetActive(false);
     }
@@ -317,6 +322,7 @@ public class ConnectSceneManager : MonoBehaviour
     //팝업 확인 버튼: 방 생성 요청
     public void OnClickCreateRoomConfirm()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         if (!PhotonNetwork.InLobby)
         {
             Debug.Log("[UI] 아직 로비 입장 중입니다.");
@@ -385,6 +391,7 @@ public class ConnectSceneManager : MonoBehaviour
     //Public/Private 버튼의 UI 상태를 표시(현재는 interactable로만 표현)
     private void UpdatePublicPrivateVisual()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
         //Public이 선택된 상태면 Public 버튼은 비활성(interactable=false 느낌으로), Private 버튼은 활성
         if (ui.btnPublic != null) ui.btnPublic.interactable = !isPublicRoom;
         //Private이 선택된 상태면 반대로

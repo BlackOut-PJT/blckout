@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public Animator anim;
     public TextMeshProUGUI playerNameText;
     public SpriteRenderer spriteRenderer; //캐릭터 색 변경에 사용 (임시)
+    private AudioSource myAudioSource;
 
     [Header("시체 이미지 설정")]
     public Sprite deadSprite; // 시체 이미지
@@ -29,6 +30,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        myAudioSource =GetComponent<AudioSource>();
 
         if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
 
@@ -74,6 +76,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
             return;
         }
 
+        //마우스 민감도 추가
+        float sens = PlayerPrefs.GetFloat("MouseSens", 1.0f);
+        float mouseX = Input.GetAxis("Mouse X") * sens;
+        float mouseY = Input.GetAxis("Mouse Y") * sens;
+        
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(x, y).normalized;
@@ -211,5 +218,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
         this.enabled = false;
 
         Debug.Log("충돌, 움직임, 조작 모두 끔!");
+    }
+
+    //발자국 소리
+    public void PlayFootStep()
+    {
+        Dictionary <string, AudioClip> sfxDictionary = SoundManager.instance.sfxDictionary;
+
+        if (sfxDictionary.TryGetValue("Walking", out AudioClip clip))
+        {
+            myAudioSource.Stop();
+            myAudioSource.clip = clip;
+            myAudioSource.Play();
+        }
     }
 }
