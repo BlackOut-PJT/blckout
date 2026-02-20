@@ -173,7 +173,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             if (dropItem != null) photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
             
             //죽은 사람 마이크 차단
-            // VoiceController.instance.ApplyVoiceState(); 
+            VoiceController.instance.ApplyVoiceState(); 
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");

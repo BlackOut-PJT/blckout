@@ -289,7 +289,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         if (currentState == GameState.Voting) return;
 
         //투표 진행 시 마이크 상태 설정
-        // VoiceController.instance.SetMeetingMicMode(true);
+        VoiceController.instance.SetMeetingMicMode(true);
         double endTime = PhotonNetwork.Time + votingTime;
         photonView.RPC("RPC_SetGameState", RpcTarget.All, GameState.Voting, endTime);
     }
@@ -301,7 +301,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         float timeElapsed = gameTime - currentGameTime;
 
         //투표 종료 후 마이크 설정
-        // VoiceController.instance.SetMeetingMicMode(false);
+        VoiceController.instance.SetMeetingMicMode(false);
 
         GameState nextState;
         if (timeElapsed >= blackoutDelay) nextState = GameState.Playing_OffLight;

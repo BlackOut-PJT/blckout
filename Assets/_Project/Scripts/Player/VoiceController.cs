@@ -7,7 +7,10 @@ public class VoiceController : MonoBehaviour
 {
     public static VoiceController instance;
     private Recorder localRecorder;
-    private bool isMicToggleOn = true;
+    public bool isMicToggleOn = true;
+
+    [Header ("마이크 UI 연결")]
+    public MicUI micUI;
 
     void Awake()
     {
@@ -15,6 +18,7 @@ public class VoiceController : MonoBehaviour
         else Destroy(this.gameObject);
         
         // localRecorder = FindObjectOfType<Recorder>();
+        micUI.SetMicUI(isMicToggleOn);
     }
 
     void Update()
@@ -30,6 +34,8 @@ public class VoiceController : MonoBehaviour
             ApplyVoiceState();
             Debug.Log($"마이크 토글 상태: {isMicToggleOn}");
         }
+
+        micUI.SetMicUI(isMicToggleOn);
     }
 
     public void ApplyVoiceState()
