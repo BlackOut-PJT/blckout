@@ -16,6 +16,8 @@ public class VotingManager : MonoBehaviourPunCallbacks
     public Transform listContent; //GridLayout 있는 Content 오브젝트
     public Button skipButton; //투표 기권 버튼
     public TextMeshProUGUI totalVoteStatusText;
+    public GameObject voteResultPanel;
+    public Animator resultAnimator;
     #endregion
 
     [Header("결과 출력")]
@@ -114,6 +116,12 @@ public class VotingManager : MonoBehaviourPunCallbacks
             int totalPlayers = GetLivingPlayerCount();
             totalVoteStatusText.text = $"{currentVoteCount}/{totalPlayers}";
         }
+    }
+
+    public void PlayVoteResult()
+    {
+        if (resultAnimator != null) resultAnimator.SetTrigger("OnShowResult");
+        voteResultPanel.SetActive(true);
     }
 
     [PunRPC]
@@ -224,20 +232,41 @@ public class VotingManager : MonoBehaviourPunCallbacks
         }
         
         //결과 공지 (RPC)
-        photonView.RPC("RPC_ShowVoteResult", RpcTarget.All, resultMessage);
+        photonView.RPC("RPC_ShowVoteResult", RpcTarget.All, resultMessage, isTie);
 
         
     }
     #endregion
 
     [PunRPC]
-    void RPC_ShowVoteResult (string msg)
+    void RPC_ShowVoteResult (string msg, bool isTie)
     {
-        Debug.Log("투표 결과: "+msg);
+        voteResultPanel.SetActive(true);
+        if (resultText != null)
+        {
+            resultText.text = msg;
+            resultText.gameObject.SetActive(true);
+            resultAnimator.gameObject.SetActive(false);
+        }
 
-        if (resultText != null) resultText.text = msg;
-        resultText.gameObject.SetActive(true);
+        if (!isTie) {
+            Debug.Log("2.무승부 아님 - 코루틴 시작 시도");
+            resultAnimator.gameObject.SetActive(true);
+            StartCoroutine(PlayAnimationWithDelay());
+        }
+        else Debug.Log("무승부임");
+
         Invoke("CloseMeeting", 3.0f);
+    }
+
+    private System.Collections.IEnumerator PlayAnimationWithDelay()
+    {
+        Debug.Log("3.코루틴 내부 진입");
+        yield return null;
+        Debug.Log("애니메이션 재생");
+        if (resultAnimator!=null) {
+            resultAnimator.SetTrigger("OnShowResult");
+        }
     }
 
     void CloseMeeting()
@@ -247,6 +276,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
             if (resultText != null) {
                 resultText.text = "";
                 resultText.gameObject.SetActive(false);
+                voteResultPanel.SetActive(false);
             }
             GameStateManager.instance.EndVoting();
         }
