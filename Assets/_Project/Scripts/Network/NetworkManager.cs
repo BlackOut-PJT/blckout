@@ -3,11 +3,17 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using ExitGames.Client.Photon;
+using System.Collections;
 
-public class NetworkManager : MonoBehaviourPunCallbacks
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+public class NetworkManager : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     //싱글톤 객체
     public static NetworkManager Instance;
+
+    //비공개 방 위한 비번
+    public static string pendingPassword = "";
 
     // 방 목록 캐시 (어느 씬에서든 접근 가능)
     public Dictionary<string, RoomInfo> cachedRoomList = new Dictionary<string, RoomInfo>();
@@ -16,6 +22,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     // UI가 이 이벤트를 구독하므로 네트워크가 UI를 직접 호출하지 않아도 됨
     public System.Action OnRoomListChanged;
 
+    //비번 관련 이벤트 코드
+    private const byte EVT_PW_CHECK_REQUEST = 10;//참가자->방장
+    private const byte EVT_PW_CHECK_RESULT = 11;//방장->참가자(허용/거절)
+    private const byte EVT_FORCE_TO_LOBBY = 12;//방장->특정 참가자: 로비로 이동시키기
+
+    private Coroutine moveRoutine = null;
     //싱글톤 유지시키는 코드
     private void Awake()
     {
@@ -33,6 +45,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         // (방장이 LoadScene하면 나머지도 따라가게 할 때 유용)
     }
+
+    //비번 이벤트
+    public override void OnEnable(){base.OnEnable();}
+
+    //비번 이벤트
+    public override void OnDisable(){base.OnDisable();}
 
     private void Start()
     {
@@ -67,7 +85,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     //UI에서 방 이름 받아서 방 생성하는 함수
-    public void CreateRoom(string roomName, byte maxPlayers)
+    public void CreateRoom(string roomName, byte maxPlayers, bool isPublic, string password)
     {
         //서버 연결 완전히 준비되지 않으면
         if(!PhotonNetwork.IsConnectedAndReady)
@@ -81,8 +99,22 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             //랜덤 이름으로 자동 생성
             roomName = "Room_" + Random.Range(1000, 9999);
 
+        //방의 커스텀 속성 테이블
+        var props = new Hashtable
+        {
+            //방 비공개인지 여부
+            {"isPrivate", !isPublic},
+            //비번 설정
+            {"pw", isPublic ? "" : password}
+        };
+
         //방 옵션 설정
-        RoomOptions options = new RoomOptions { MaxPlayers = maxPlayers, IsVisible = true, IsOpen = true };
+        RoomOptions options = new RoomOptions
+        {
+            MaxPlayers = maxPlayers, IsVisible = true, IsOpen = true, CustomRoomProperties = props,
+            CustomRoomPropertiesForLobby = new[] {"isPrivate"}
+        };
+
         //방 생성 시도(성공 시 자동으로 그 방에 입장)
         //성공 시 콜백 : OnJoinedRoom()
         //실패 시 콜백 : OnCreateRoomFailed()
@@ -103,6 +135,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             return;
 
         PhotonNetwork.JoinRoom(roomName);
+    }
+
+    //비번 포함 버전 JoinRoom 함수(Join 전에 비번 저장해야하므로)
+    public void JoinRoom(string roomName, string password)
+    {
+        pendingPassword = password ?? "";
+        JoinRoom(roomName);//기존 함수 재사용
     }
 
 
@@ -142,8 +181,31 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("OnJoinedRoom 호출");
-        //SceneManager.LoadScene("[Photon] OnJoinedRoom -> Load Scene_Lobby");
-        PhotonNetwork.LoadLevel("Scene_Lobby");
+        
+        bool isPrivate = false;
+        if(PhotonNetwork.CurrentRoom.CustomProperties != null &&
+            PhotonNetwork.CurrentRoom.CustomProperties.ContainsKey("isPrivate"))
+        {
+            isPrivate = (bool)PhotonNetwork.CurrentRoom.CustomProperties["isPrivate"];
+        }
+
+        //공개방이면 바로 이동
+        if (!isPrivate)
+        {
+            //SceneManager.LoadScene("[Photon] OnJoinedRoom -> Load Scene_Lobby");
+            PhotonNetwork.LoadLevel("Scene_Lobby");
+            return;
+        }
+
+        //비공개방 + 내가 방장이면 바로 이동
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.LoadLevel("Scene_Lobby");
+            return;
+        }
+
+        //비공개 참가자면: 방장에게 비번 검증 요청
+        SendPasswordCheckRequestToMaster(pendingPassword);
     }
 
     // CreateRoom이 실패했을 때 자동 호출되는 콜백
@@ -161,5 +223,116 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("[NM] JoinedLobby");
     }
+
+    //참가자->방장 비번 검증 요청 보냄
+    private void SendPasswordCheckRequestToMaster(string inputPw)
+    {
+        inputPw ??= "";
+
+        //payload: [요청자 ActorNumber, 입력 비번]
+        object[] content = new object[] {PhotonNetwork.LocalPlayer.ActorNumber, inputPw};
+
+        //이벤트 방장만 받음
+        var opt = new RaiseEventOptions
+        {
+            Receivers = ReceiverGroup.MasterClient //방장에게만
+        };
+
+        //이벤트 전송
+        //요청코드, 데이터, 누가 받을지 설정한 것, sendreliable
+        PhotonNetwork.RaiseEvent(EVT_PW_CHECK_REQUEST, content, opt, SendOptions.SendReliable);
+        Debug.Log("[PrivateRoom] PW check 요청을 방장에게 보냄");
+    }
+
+    //Photon 이벤트 수신 함수
+    public void OnEvent(EventData photonEvent)
+    {
+        //비번 검증 요청 이벤트
+        if(photonEvent.Code == EVT_PW_CHECK_REQUEST)
+        {
+            //방장만 처리
+            if(!PhotonNetwork.IsMasterClient) return;
+            HandlePwCheckRequest_AsMaster(photonEvent);
+        }
+
+        //비번 검증 결과 이벤트
+        else if(photonEvent.Code == EVT_PW_CHECK_RESULT)
+        {
+            //참가자 결과 처리
+            HandlePwCheckResult_AsClient(photonEvent);
+        }
+
+        else if(photonEvent.Code == EVT_FORCE_TO_LOBBY)
+        {
+            //참가자만 처리
+            if(!PhotonNetwork.IsMasterClient && moveRoutine == null) moveRoutine = StartCoroutine(CoMoveToLobbyWhenReady());
+        }
+    }
     
+    //방장이 비번 검증 요청 받을 시 실행
+    private void HandlePwCheckRequest_AsMaster(EventData e)
+    {
+        //이벤트에서 데이터 꺼내기
+        var data = (object[])e.CustomData;
+
+        int requesterActor = (int)data[0];//요청자 ActorNumber
+        string inputPw = data[1] as string ?? "";//요청자 입력 비번
+
+        //현재 방 실제 비번
+        string realPw = PhotonNetwork.CurrentRoom.CustomProperties["pw"] as string ?? "";
+
+        //입력 비번과 실제 비번 비교
+        bool ok = (inputPw == realPw);
+
+        //요청자에게 보낼 비교 결과 데이터
+        object[] result = new object[] {ok};
+
+        //요청자에게만 보내기
+        var opt = new RaiseEventOptions
+        {
+            TargetActors = new int[] {requesterActor}
+        };
+
+        //결과 이벤트 전송
+        PhotonNetwork.RaiseEvent(EVT_PW_CHECK_RESULT, result, opt, SendOptions.SendReliable);
+        Debug.Log($"[PrivateRoom] PW 체크 요청 -> actor={requesterActor} ok={ok}");
+
+        if (ok)
+        {
+            var moveOpt = new RaiseEventOptions {TargetActors = new int[] {requesterActor}};
+            PhotonNetwork.RaiseEvent(EVT_FORCE_TO_LOBBY, null, moveOpt, SendOptions.SendReliable);
+        }
+    }
+
+        //참가자가 비번 비교 결과 받았을 때 실행
+        private void HandlePwCheckResult_AsClient(EventData e)
+    {
+        //이벤트 데이터 꺼내기
+        var data = (object[])e.CustomData;
+        bool ok = (bool)data[0];//true 통과 false 실패
+
+        pendingPassword = "";//사용 후 초기화
+
+        //결과 따라 처리
+        if (ok)
+        {
+            Debug.Log("[PrivateRoom] PW OK -> LOAD LOBBY");
+            //PhotonNetwork.LoadLevel("Scene_Lobby");
+        }
+        else
+        {
+            Debug.Log("[PrivateRoom] PW WRONG -> LEAVEROOM");
+            PhotonNetwork.LeaveRoom();
+        }
+    }
+
+    private IEnumerator CoMoveToLobbyWhenReady()
+    {
+        yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom);
+
+        //이미 로비면 또 안감
+        if(SceneManager.GetActiveScene().name != "Scene_Lobby") PhotonNetwork.LoadLevel("Scene_Lobby");
+
+        moveRoutine = null;
+    }
 }

@@ -22,8 +22,15 @@ public class ConnectUIBinder : MonoBehaviour
     [Header("Create Room Popup")]
     public GameObject createRoomPopup;
     public TMP_InputField roomNameInput;
+    public TMP_InputField roomPasswordInput;
     public Button btnConfirm;
     public Button btnCancel;
+
+    [Header("Join Password Popup")]
+    public GameObject joinPasswordPopup;
+    public TMP_InputField joinPasswordInput;
+    public Button btnJoinPwConfirm;
+    public Button btnJoinPwCancel;
 
     [Header("Room List")]
     public Transform roomListParent; //Content. Scroll View / Viewport / Content 

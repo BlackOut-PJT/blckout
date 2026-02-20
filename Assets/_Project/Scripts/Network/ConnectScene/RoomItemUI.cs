@@ -16,10 +16,12 @@ public class RoomItemUI : MonoBehaviour
     [SerializeField] private Button btnJoin;      //참여하기 버튼(Inspector에 연결)
 
     private string cachedRoomName;//버튼 클릭 때 넘길 방 이름 변수
+    private RoomInfo cachedInfo;
 
     //방 정보 받아서 UI 세팅
     public void Set(RoomInfo info)
     {
+        cachedInfo = info;
         cachedRoomName = info.Name;
         //방 이름 표시
         if(roomName != null)
@@ -53,6 +55,23 @@ public class RoomItemUI : MonoBehaviour
             props["nick"] = nick;
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         }
-        NetworkManager.Instance.JoinRoom(cachedRoomName);
+
+        bool isPrivate = false;
+
+        if(cachedInfo != null && cachedInfo.CustomProperties != null && cachedInfo.CustomProperties.ContainsKey("isPrivate"))
+        {
+            isPrivate = (bool)cachedInfo.CustomProperties["isPrivate"];
+        }
+
+        if (!isPrivate)
+        {
+            //공개방
+            NetworkManager.Instance.JoinRoom(cachedRoomName, "");
+        }
+        else
+        {
+            //비공개방 -> 비번 팝업 열기
+            ConnectSceneManager.Instance.OpenJoinPasswordPopup(cachedRoomName);
+        }
     }
 }

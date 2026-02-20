@@ -19,13 +19,8 @@ public class ConnectSceneManager : MonoBehaviour
     [Header("Nickname")]
     public TMP_InputField NickNameInput;
 
-    [Header("Create Room Popup")]
-    public GameObject createRoomPopup; //방만들기 팝업 패널
-    public TMP_InputField RoomNameInput;//팝업 내 방이름 인풋필드
-
-    [Header("Room List")]
-    public Transform roomListParent; //roomItem 담아놓을 부모
-    public GameObject roomItemPrefab; //roomItem 프리팹
+    [Header("비공개 눌렀을 때 뜨는 팝업")]
+    private string pendingJoinRoomName;
 
     [Header("Scene")]
     public byte maxPlayers = 6;
@@ -52,6 +47,7 @@ public class ConnectSceneManager : MonoBehaviour
     }
     void Awake()
     {   
+        Instance = this;
         //Inspector로 ui를 안 넣었으면 씬에서 자동으로 ConnectUIBinder를 찾아서 연결
         if (ui == null)
             ui = FindAnyObjectByType<ConnectUIBinder>();
@@ -64,11 +60,17 @@ public class ConnectSceneManager : MonoBehaviour
         }
 
         //시작할 때 방만들기 팝업 꺼놓기
-        if(createRoomPopup != null)
-            createRoomPopup.SetActive(false);
+        if(ui.createRoomPopup != null)
+            ui.createRoomPopup.SetActive(false);
+        
+        //추가 : 참가 비번 팝업도 꺼놓기
+        if(ui.joinPasswordPopup != null)
+            ui.joinPasswordPopup.SetActive(false);
         
         //여기서 UI 이벤트(버튼 클릭/인풋 변화)를 AddListener로 "코드에서" 연결
         BindUI();
+
+        UpdatePublicPrivateVisual();
     }
 
     //오브젝트가 활성화될 때마다 호출(씬 진입, SetActive(true) 등)
@@ -184,6 +186,19 @@ public class ConnectSceneManager : MonoBehaviour
         {
             ui.btnCancel.onClick.RemoveAllListeners();
             ui.btnCancel.onClick.AddListener(CloseCreateRoomPopup);
+        }
+
+        // ---- Join Password Popup ----
+        if(ui.btnJoinPwConfirm != null)
+        {
+            ui.btnJoinPwConfirm.onClick.RemoveAllListeners();
+            ui.btnJoinPwConfirm.onClick.AddListener(OnClickJoinPasswordConfirm);
+        }
+
+        if(ui.btnJoinPwCancel != null)
+        {
+            ui.btnJoinPwCancel.onClick.RemoveAllListeners();
+            ui.btnJoinPwCancel.onClick.AddListener(CloseJoinPasswordPopup);
         }
     }
 
@@ -339,7 +354,17 @@ public class ConnectSceneManager : MonoBehaviour
         PhotonNetwork.NickName = GetNick();
 
         string roomName = ui.roomNameInput != null ? ui.roomNameInput.text.Trim() : "";
-        NetworkManager.Instance.CreateRoom(roomName, maxPlayers);
+
+        string password = "";
+        if (!isPublicRoom)
+        {
+            //비공개일 때만 비번 읽기
+            password = ui.roomPasswordInput != null ?
+                        ui.roomPasswordInput.text.Trim() : "";
+        }
+
+        NetworkManager.Instance.CreateRoom(roomName, maxPlayers, isPublicRoom, password);
+
         CloseCreateRoomPopup();
     }
 
@@ -356,7 +381,7 @@ public class ConnectSceneManager : MonoBehaviour
         }
 
         //RoomItem 프리팹이 없으면 생성 불가
-        if (roomItemPrefab == null)
+        if (ui.roomItemPrefab == null)
         {
             Debug.LogError("[UI] roomItemPrefab이 NULL (Inspector에 넣어줘야 함)");
             return;
@@ -376,7 +401,7 @@ public class ConnectSceneManager : MonoBehaviour
             RoomInfo info = kv.Value;
 
             //프리팹을 Content 아래에 생성
-            GameObject item = Instantiate(roomItemPrefab, ui.roomListParent);
+            GameObject item = Instantiate(ui.roomItemPrefab, ui.roomListParent);
 
             //RoomItemUI 컴포넌트가 있으면 Set(info)로 텍스트/버튼 등을 세팅
             RoomItemUI roomItemUI = item.GetComponent<RoomItemUI>();
@@ -396,6 +421,52 @@ public class ConnectSceneManager : MonoBehaviour
         if (ui.btnPublic != null) ui.btnPublic.interactable = !isPublicRoom;
         //Private이 선택된 상태면 반대로
         if (ui.btnPrivate != null) ui.btnPrivate.interactable = isPublicRoom;
+
+        if(ui.roomPasswordInput != null) ui.roomPasswordInput.gameObject.SetActive(!isPublicRoom);
+    }
+
+    //비번 입력하는 팝업 열기 함수
+    public void OpenJoinPasswordPopup(string roomName)
+    {
+        pendingJoinRoomName = roomName;
+
+        if(ui.joinPasswordPopup != null)
+            ui.joinPasswordPopup.SetActive(true);
+        
+        if(ui.joinPasswordInput != null)
+        {
+            ui.joinPasswordInput.text = "";
+            ui.joinPasswordInput.ActivateInputField();
+        }
+    }
+
+    public void CloseJoinPasswordPopup()
+    {
+        SoundManager.instance.UISoundPlay("ButtonClick");
+        pendingJoinRoomName = "";
+
+        if(ui.joinPasswordInput != null) ui.joinPasswordInput.text = "";
+        if(ui.joinPasswordPopup != null) ui.joinPasswordPopup.SetActive(false);
+    }
+
+    //비번 팝업 확인 버튼 눌렀을 때
+    public void OnClickJoinPasswordConfirm()
+    {
+        SoundManager.instance.UISoundPlay("ButtonClick");
+
+        string inputPw = ui.joinPasswordInput != null ? ui.joinPasswordInput.text.Trim() : "";
+
+        if (string.IsNullOrEmpty(pendingJoinRoomName))
+        {
+            Debug.LogWarning("[JoinPw] pendingJoinRoomName is empty");
+            return;
+        }
+
+        //비번 포함 JoinRoom 호출
+        NetworkManager.Instance.JoinRoom(pendingJoinRoomName, inputPw);
+
+        //팝업 닫기
+        CloseJoinPasswordPopup();
     }
     
 }
