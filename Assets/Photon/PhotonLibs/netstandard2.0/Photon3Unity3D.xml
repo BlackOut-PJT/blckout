@@ -251,6 +251,9 @@
             <param name="command">The command to check and queue.</param>
             <returns>True if the command is new and got queued (or could be executed/dispatched).</returns>
         </member>
+        <member name="F:ExitGames.Client.Photon.EnetPeer.QUICK_RESEND_QUEUELIMIT">
+            <summary>Quick Resends are suspended if the sent queue is this size or larger.</summary>
+        </member>
         <member name="F:ExitGames.Client.Photon.EnetPeer.sentReliableCommands">
             <summary>One list for all channels keeps sent commands (for re-sending).</summary>
         </member>
@@ -1351,17 +1354,14 @@
             </summary>
         </member>
         <member name="P:ExitGames.Client.Photon.PhotonPeer.QuickResendAttempts">
-             <summary>
-             Up to 4 resend attempts for a reliable command can be done with minimal ack-wait timing (after RTT+4*Variance).
-             </summary>
-             <remarks>
-             If a command needs to be resent multiple times, the wait time for ACKs gets increased.
-             Any resend within the QuickResendAttempts will use the initial timing for resending (RTT+4*Variance).
-            
-             Default: 2. Range: 1 to 4.
-             
-             Make sure to adjust SentCountAllowance to a slightly higher value, as more repeats happen.
-             </remarks>
+            <summary>
+            Up to 4 resend attempts for a reliable command can be done in quick succession (after RTT+4*Variance).
+            </summary>
+            <remarks>
+            By default 0. Any later resend attempt will then double the time before the next resend.
+            Max value = 4;
+            Make sure to adjust SentCountAllowance to a slightly higher value, as more repeats will get done.
+            </remarks>
         </member>
         <member name="P:ExitGames.Client.Photon.PhotonPeer.PeerState">
             <summary>
@@ -1450,15 +1450,14 @@
         </member>
         <member name="F:ExitGames.Client.Photon.PhotonPeer.SentCountAllowance">
              <summary>
-             Maximum number of resends for any reliable command. If no ack arrives for this many attempts, the connection is timed out. Default: 15.
+             Number of send retries before a peer is considered lost/disconnected. Default: 7.
              </summary>
              <remarks>
              The initial timeout countdown of a command is calculated by the current roundTripTime + 4 * roundTripTimeVariance.
-             
              Please note that the timeout span until a command will be resent is not constant, but based on
-             the roundtrip time at the initial sending, which (after the QuickResends) will be doubled with every failed retry.
+             the roundtrip time at the initial sending, which will be doubled with every failed retry.
             
-             DisconnectTimeout and SentCountAllowance are related settings: either might trigger a disconnect on the
+             DisconnectTimeout and SentCountAllowance are competing settings: either might trigger a disconnect on the
              client first, depending on the values and Roundtrip Time.
              </remarks>
         </member>
@@ -1860,8 +1859,8 @@
             </summary>
             <param name="encryptionSecret">Secret used to cipher udp packets.</param>
             <param name="hmacSecret">Secret used for authentication of udp packets.</param>
-            <param name="randomizedSequenceNumbers">Sets if enet Sequence Numbers will be randomized or not. Default: true.</param>
-            <param name="chainingModeGCM">Sets if the chaining mode should be CBC (false) or GCM (true, default). GCM mode is only available with a native encryption plugin.</param>
+            <param name="randomizedSequenceNumbers">Sets if enet Sequence Numbers will be randomized or not. Preferably should be true.</param>
+            <param name="chainingModeGCM">Sets if the chaining mode should be CBC (false, default) or GCM (true). GCM mode is only available with a native encryption plugin.</param>
         </member>
         <member name="M:ExitGames.Client.Photon.PhotonPeer.InitPayloadEncryption(System.Byte[])">
             <summary>

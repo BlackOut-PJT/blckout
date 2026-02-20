@@ -1332,7 +1332,7 @@ namespace Photon.Realtime
     /// </remarks>
     public class ActorProperties
     {
-        /// <summary>(255) NickName of a player/actor.</summary>
+        /// <summary>(255) Name of a player/actor.</summary>
         public const byte PlayerName = 255; // was: 1
 
         /// <summary>(254) Tells you if the player is currently in this game (getting events live).</summary>

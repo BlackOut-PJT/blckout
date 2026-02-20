@@ -3,11 +3,6 @@ PUN 2 - Changelog
 www.photonengine.com  -  Join the community Discord Server: https://dashboard.photonengine.com/account/profile
 
 
-v2.52 (10. November 2025)
-Updated: Demo for Chat API (same as in Realtime / Chat SDK for Unity v4.1.8.17). Plenty of files changes, so Unity might fail the import. To fix: Please delete folder: \Assets\Photon\PhotonChat\Demos before import.
-Note: A modification from the original demo is that it uses the Chat AppId from PUN's PhotonServerSettings, if the project has the PUN defines. Else, this uses a ChatSettings file.
-Updated: Library, Realtime and Chat API to 4.1.8.17. Improved connection settings for less timeouts. More details in the change logs.
-
 v2.51 (31. July 2025)
 Updated: Unity 6 Editor support (using https to ping regions while using WebGL as build target).
 Updated: The experimental Threaded WebAssembly feature of Unity 6 can now be used.

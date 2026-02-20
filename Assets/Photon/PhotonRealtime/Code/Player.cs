@@ -251,7 +251,7 @@ namespace Photon.Realtime
             {
                 return;
             }
-
+            
             // only remote player instances update their NickName from the properties
             if (!this.IsLocal && properties.ContainsKey(ActorProperties.PlayerName))
             {
@@ -423,7 +423,7 @@ namespace Photon.Realtime
         }
 
 
-        /// <summary>Updates the server, if the NickName in the custom properties (coming from the server) is not correct.</summary>
+        /// <summary>If there is a nickname in the room props, but it's not the current (local) one, update the room when joining/joined.</summary>
         internal bool UpdateNickNameOnJoined()
         {
             if (this.RoomReference == null || this.RoomReference.CustomProperties == null || !this.IsLocal)
@@ -431,8 +431,10 @@ namespace Photon.Realtime
                 return false;
             }
 
-            string nickStoredInCustomProps = this.CustomProperties[ActorProperties.PlayerName] as string;
-            if (!string.Equals(this.NickName, nickStoredInCustomProps))
+            bool found = this.RoomReference.CustomProperties.ContainsKey(ActorProperties.PlayerName);
+            string nickFromProps = found ? this.RoomReference.CustomProperties[ActorProperties.PlayerName] as string : string.Empty;
+
+            if (!string.Equals(this.NickName, nickFromProps))
             {
                 return this.SetPlayerNameProperty();
             }

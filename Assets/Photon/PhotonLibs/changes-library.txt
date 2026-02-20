@@ -3,21 +3,6 @@ Photon C# Client Library - Changelog
 www.photonengine.com  -  Join our Discord Server: https://dashboard.photonengine.com/account/profile
 
 
-Version 4.1.8.17 (10. November 2025 - rev8151)
-    Updated: Error handling and logging in PhotonPeer.InitDatagramEncryption(). It now disconnects the client with a respective status callback (in case there is no Datagram Encryption implementation, etc.).
-    Changed: Replaced a NullReferenceException in InitDatagramEncryption() with a more suitable disconnect via StatusCode.EncryptionFailedToEstablish.
-    Changed: PhotonPeer.InitDatagramEncryption() defaults to using RandomizeSequenceNumbers and GCM Chaining Mode. As we only support datagramEncryption with GCM anymore, this is a good choice.
-    Added: Resent count to PhotonPeer.VitalStatsToString().
-    Changed: The command.roundTripTimeout is now limited to not grow longer than InitialResendTimeMax * 2. This makes sure sent commands get repeated some more times.
-    Changed: SentCountAllowance now defaults to 15.
-    Changed: QuickResendAttempts to 2 (beyond the initial resend timeout, two more attempts to resend a command quickly).
-    Removed: Internal EnetPeer.QUICK_RESEND_QUEUELIMIT. Quick Resends are now limited by PhotonPeer.SendWindowSize. If sneding is over the SendWindowSize, Quick Resends are not as useful anymore.
-    Internal: DispatchIncomingCommands() locks on the channel for reliable sequenced.
-    Changed: Error handling for WSAENOBUFS "No buffer space available" and WSAEMSGSIZE "Message too long." to just skip over these. These should be temporary and anything reliable would be re-sent. These will no longer end a connection but log on INFO level.
-    Changed: QueueSentCommand() to properly check QuickResendAttempts. As the first resend has "quick" timing, QuickResendAttempts now has a minimum value of 1.
-    Changed: QuickResendAttempts are now in the range of 1 - 4 and default to 2.
-    Updated: Reference for QuickResendAttempts and SentCountAllowance.
-
 Version 4.1.8.16 (31. July 2025 - rev8016)
     Added: SupportClass overload for CalculateCrc() with offset.
     Changed: CalculateCrc() without offset is now obsolete.

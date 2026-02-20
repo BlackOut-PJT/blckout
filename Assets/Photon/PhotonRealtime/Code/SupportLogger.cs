@@ -27,7 +27,6 @@ namespace Photon.Realtime
     using Stopwatch = System.Diagnostics.Stopwatch;
 
     using ExitGames.Client.Photon;
-    using System.Threading;
 
     #if SUPPORTED_UNITY
     using UnityEngine;
@@ -95,6 +94,16 @@ namespace Photon.Realtime
 
 
         #if SUPPORTED_UNITY
+        protected void Start()
+        {
+            this.LogBasics();
+
+            if (this.startStopwatch == null)
+            {
+                this.startStopwatch = new Stopwatch();
+                this.startStopwatch.Start();
+            }
+        }
 
         protected void OnDestroy()
         {
@@ -116,100 +125,76 @@ namespace Photon.Realtime
         {
             this.CancelInvoke();
         }
-
-        #else
-
-        // non-Unity implementation uses Timer instances
-        private Timer trackingTimer;
-        private Timer logTimer;
-
-        [Obsolete]
-        public SupportLogger()
-        {
-        }
-
-        public SupportLogger(LoadBalancingClient client)
-        {
-            this.Client = client;
-        }
-        
-        // called by Timer which requires a state object parameter
-        private void TrackValues(object o)
-        {
-            this.TrackValues();
-        }
-        
-        // called by Timer which requires a state object parameter
-        private void LogStats(object o)
-        {
-            this.LogStats();
-        }
-
         #endif
-
-        /// <summary>Seconds between logging network stats.</summary>
-        public float LogStatsInterval = 5;
-        /// <summary>Seconds between internally tracking network stats.</summary>
-        public float TrackValuesInterval = 0.05f;
-
 
         public void StartLogStats()
         {
             #if SUPPORTED_UNITY
-            this.InvokeRepeating(nameof(this.LogStats), this.LogStatsInterval, this.LogStatsInterval);
+            this.InvokeRepeating("LogStats", 10, 10);
             #else
-            int logStatsMs = (int)(this.LogStatsInterval * 1000);
-            this.logTimer = new Timer(this.LogStats, null, logStatsMs, logStatsMs);
+            Debug.Log("Not implemented for non-Unity projects.");
             #endif
         }
 
         public void StopLogStats()
         {
             #if SUPPORTED_UNITY
-            this.CancelInvoke(nameof(this.LogStats));
+            this.CancelInvoke("LogStats");
             #else
-            this.logTimer.Dispose();
-            this.logTimer = null;
+            Debug.Log("Not implemented for non-Unity projects.");
             #endif
         }
 
         private void StartTrackValues()
         {
             #if SUPPORTED_UNITY
-            this.InvokeRepeating(nameof(this.TrackValues), this.TrackValuesInterval, this.TrackValuesInterval);
+            this.InvokeRepeating("TrackValues", 0.5f, 0.5f);
             #else
-            int trackValuesMs = (int)(this.TrackValuesInterval * 1000);
-            this.trackingTimer = new Timer(this.TrackValues, null, trackValuesMs, trackValuesMs);
+            Debug.Log("Not implemented for non-Unity projects.");
             #endif
         }
 
         private void StopTrackValues()
         {
             #if SUPPORTED_UNITY
-            this.CancelInvoke(nameof(this.TrackValues));
+            this.CancelInvoke("TrackValues");
             #else
-            this.trackingTimer.Dispose();
-            this.trackingTimer = null;
+            Debug.Log("Not implemented for non-Unity projects.");
             #endif
         }
 
+        private string GetFormattedTimestamp()
+        {
+            if (this.startStopwatch == null)
+            {
+                this.startStopwatch = new Stopwatch();
+                this.startStopwatch.Start();
+            }
 
-        // called via Timer or InvokeRepeating (Unity)
+            TimeSpan span = this.startStopwatch.Elapsed;
+            if (span.Minutes > 0)
+            {
+                return string.Format("[{0}:{1}.{1}]", span.Minutes, span.Seconds, span.Milliseconds);
+            }
+
+            return string.Format("[{0}.{1}]", span.Seconds, span.Milliseconds);
+        }
+
+
+        // called via InvokeRepeatedly
         private void TrackValues()
         {
-            if (this.client == null)
+            if (this.client != null)
             {
-                return;
-            }
-
-            int currentRtt = this.client.LoadBalancingPeer.RoundTripTime;
-            if (currentRtt > this.pingMax)
-            {
-                this.pingMax = currentRtt;
-            }
-            if (currentRtt < this.pingMin)
-            {
-                this.pingMin = currentRtt;
+                int currentRtt = this.client.LoadBalancingPeer.RoundTripTime;
+                if (currentRtt > this.pingMax)
+                {
+                    this.pingMax = currentRtt;
+                }
+                if (currentRtt < this.pingMin)
+                {
+                    this.pingMin = currentRtt;
+                }
             }
         }
 
@@ -230,85 +215,79 @@ namespace Photon.Realtime
             }
         }
 
-
         /// <summary>
         /// Debug logs basic information (AppId, AppVersion, PeerID, Server address, Region) about the attached Photon Client.
         /// </summary>
         private void LogBasics()
         {
-            if (this.client == null)
+            if (this.client != null)
             {
-                return;
+                List<string> buildProperties = new List<string>(10);
+                #if SUPPORTED_UNITY
+                buildProperties.Add(Application.unityVersion);
+                buildProperties.Add(Application.platform.ToString());
+                #endif
+                #if ENABLE_IL2CPP
+                buildProperties.Add("ENABLE_IL2CPP");
+                #endif
+                #if ENABLE_MONO
+                buildProperties.Add("ENABLE_MONO");
+                #endif
+                #if DEBUG
+                buildProperties.Add("DEBUG");
+                #endif
+                #if MASTER
+                buildProperties.Add("MASTER");
+                #endif
+                #if NET_4_6
+                buildProperties.Add("NET_4_6");
+                #endif
+                #if NET_STANDARD_2_0
+                buildProperties.Add("NET_STANDARD_2_0");
+                #endif
+                #if NETFX_CORE
+                buildProperties.Add("NETFX_CORE");
+                #endif
+                #if NET_LEGACY
+                buildProperties.Add("NET_LEGACY");
+                #endif
+                #if UNITY_64
+                buildProperties.Add("UNITY_64");
+                #endif
+                #if UNITY_FUSION
+                buildProperties.Add("UNITY_FUSION");
+                #endif
+
+
+                StringBuilder sb = new StringBuilder();
+
+                string appIdShort = string.IsNullOrEmpty(this.client.AppId) || this.client.AppId.Length < 8 ? this.client.AppId : string.Concat(this.client.AppId.Substring(0, 8), "***");
+
+                sb.AppendFormat("{0} SupportLogger Info: ", this.GetFormattedTimestamp());
+                sb.AppendFormat("AppID: \"{0}\" AppVersion: \"{1}\" Client: v{2} ({4}) Build: {3} ", appIdShort, this.client.AppVersion, PhotonPeer.Version, string.Join(", ", buildProperties.ToArray()), this.client.LoadBalancingPeer.TargetFramework);
+                if (this.client != null && this.client.LoadBalancingPeer != null && this.client.LoadBalancingPeer.SocketImplementation != null)
+                {
+                    sb.AppendFormat("Socket: {0} ", this.client.LoadBalancingPeer.SocketImplementation.Name);
+                }
+
+                sb.AppendFormat("UserId: \"{0}\" AuthType: {1} AuthMode: {2} {3} ", this.client.UserId, (this.client.AuthValues != null) ? this.client.AuthValues.AuthType.ToString() : "N/A", this.client.AuthMode, this.client.EncryptionMode);
+
+                sb.AppendFormat("State: {0} ", this.client.State);
+                sb.AppendFormat("PeerID: {0} ", this.client.LoadBalancingPeer.PeerID);
+                sb.AppendFormat("NameServer: {0} Current Server: {1} IP: {2} Region: {3} ", this.client.NameServerHost, this.client.CurrentServerAddress, this.client.LoadBalancingPeer.ServerIpAddress, this.client.CloudRegion);
+                sb.AppendFormat("{0} UTC", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+
+                Debug.LogWarning(sb.ToString());
             }
-
-            List<string> buildProperties = new List<string>(10);
-            #if SUPPORTED_UNITY
-            buildProperties.Add(Application.unityVersion);
-            buildProperties.Add(Application.platform.ToString());
-            #endif
-            #if ENABLE_IL2CPP
-            buildProperties.Add("ENABLE_IL2CPP");
-            #endif
-            #if ENABLE_MONO
-            buildProperties.Add("ENABLE_MONO");
-            #endif
-            #if DEBUG
-            buildProperties.Add("DEBUG");
-            #endif
-            #if MASTER
-            buildProperties.Add("MASTER");
-            #endif
-            #if NET_4_6
-            buildProperties.Add("NET_4_6");
-            #endif
-            #if NET_STANDARD_2_0
-            buildProperties.Add("NET_STANDARD_2_0");
-            #endif
-            #if NET_STANDARD_2_1
-            buildProperties.Add("NET_STANDARD_2_1");
-            #endif
-            #if NETFX_CORE
-            buildProperties.Add("NETFX_CORE");
-            #endif
-            #if NET_LEGACY
-            buildProperties.Add("NET_LEGACY");
-            #endif
-            #if UNITY_64
-            buildProperties.Add("UNITY_64");
-            #endif
-            #if UNITY_FUSION
-            buildProperties.Add("UNITY_FUSION");
-            #endif
-
-
-            StringBuilder sb = new StringBuilder();
-
-            string appIdShort = string.IsNullOrEmpty(this.client.AppId) || this.client.AppId.Length < 8 ? this.client.AppId : string.Concat(this.client.AppId.Substring(0, 8), "***");
-
-            sb.AppendFormat("{0} SupportLogger Info: ", this.GetFormattedTimestamp());
-            sb.AppendFormat("AppID: \"{0}\" AppVersion: \"{1}\" Client: v{2} ({4}) Build: {3} ", appIdShort, this.client.AppVersion, PhotonPeer.Version, string.Join(", ", buildProperties.ToArray()), this.client.LoadBalancingPeer.TargetFramework);
-            if (this.client != null && this.client.LoadBalancingPeer != null && this.client.LoadBalancingPeer.SocketImplementation != null)
-            {
-                sb.AppendFormat("Socket: {0} ", this.client.LoadBalancingPeer.SocketImplementation.Name);
-            }
-
-            sb.AppendFormat("UserId: \"{0}\" AuthType: {1} AuthMode: {2} {3} ", this.client.UserId, (this.client.AuthValues != null) ? this.client.AuthValues.AuthType.ToString() : "N/A", this.client.AuthMode, this.client.EncryptionMode);
-
-            sb.AppendFormat("State: {0} ", this.client.State);
-            sb.AppendFormat("PeerID: {0} ", this.client.LoadBalancingPeer.PeerID);
-            sb.AppendFormat("NameServer: {0} Current Server: {1} IP: {2} Region: {3} ", this.client.NameServerHost, this.client.CurrentServerAddress, this.client.LoadBalancingPeer.ServerIpAddress, this.client.CloudRegion);
-            sb.AppendFormat("{0} UTC", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
-
-            Debug.Log(sb.ToString());
         }
 
 
         public void OnConnected()
         {
+            Debug.Log(this.GetFormattedTimestamp() + " SupportLogger OnConnected().");
             this.pingMax = 0;
             this.pingMin = this.client.LoadBalancingPeer.RoundTripTime;
             this.LogBasics();
-            Debug.Log(this.GetFormattedTimestamp() + " SupportLogger OnConnected().");
 
             if (this.LogTrafficStats)
             {
@@ -319,17 +298,6 @@ namespace Photon.Realtime
 
             this.StartTrackValues();
         }
-
-        public void OnDisconnected(DisconnectCause cause)
-        {
-            this.StopLogStats();
-            this.StopTrackValues();
-
-            Debug.Log(this.GetFormattedTimestamp() + " SupportLogger OnDisconnected(" + cause + ").");
-            this.LogBasics();
-            this.LogStats();
-        }
-
 
         public void OnConnectedToMaster()
         {
@@ -379,6 +347,16 @@ namespace Photon.Realtime
         public void OnLeftRoom()
         {
             Debug.Log(this.GetFormattedTimestamp() + " SupportLogger OnLeftRoom().");
+        }
+
+		public void OnDisconnected(DisconnectCause cause)
+        {
+            this.StopLogStats();
+            this.StopTrackValues();
+
+			Debug.Log(this.GetFormattedTimestamp() + " SupportLogger OnDisconnected(" + cause + ").");
+			this.LogBasics();
+            this.LogStats();
         }
 
         public void OnRegionListReceived(RegionHandler regionHandler)
@@ -431,29 +409,6 @@ namespace Photon.Realtime
 			Debug.Log(this.GetFormattedTimestamp() + " SupportLogger OnLobbyStatisticsUpdate(lobbyStatistics).");
         }
 
-        public void OnErrorInfo(ErrorInfo errorInfo)
-        {
-            Debug.LogError(this.GetFormattedTimestamp() + " SupportLogger OnErrorInfo(): " + errorInfo.ToString());
-        }
-
-        
-        private string GetFormattedTimestamp()
-        {
-            if (this.startStopwatch == null)
-            {
-                this.startStopwatch = new Stopwatch();
-                this.startStopwatch.Start();
-            }
-
-            TimeSpan span = this.startStopwatch.Elapsed;
-            if (span.Minutes > 0)
-            {
-                return string.Format("[{0}:{1}.{1:000}]", span.Minutes, span.Seconds, span.Milliseconds);
-            }
-
-            return string.Format("[{0}.{1:000}]", span.Seconds, span.Milliseconds);
-        }
-
 
         #if !SUPPORTED_UNITY
         private static class Debug
@@ -472,5 +427,10 @@ namespace Photon.Realtime
             }
         }
         #endif
+
+        public void OnErrorInfo(ErrorInfo errorInfo)
+        {
+            Debug.LogError(errorInfo.ToString());
+        }
     }
 }

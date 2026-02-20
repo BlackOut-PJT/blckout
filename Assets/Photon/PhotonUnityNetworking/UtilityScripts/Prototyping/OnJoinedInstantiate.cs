@@ -136,7 +136,7 @@ namespace Photon.Pun.UtilityScripts
 
 				var prefabStatus = PrefabUtility.GetPrefabInstanceStatus(unvalidated);
 
-                #if UNITY_2021_3_OR_NEWER
+                #if UNITY_6000_0_OR_NEWER
                 var isValidPrefab = prefabStatus != PrefabInstanceStatus.NotAPrefab;
                 #else
 				var isValidPrefab = prefabStatus == PrefabInstanceStatus.Connected || prefabStatus == PrefabInstanceStatus.Disconnected;

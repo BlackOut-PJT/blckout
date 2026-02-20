@@ -3,14 +3,6 @@ Photon Realtime C# Client - Changelog
 www.photonengine.com  -  Join our Discord Server: https://dashboard.photonengine.com/account/profile
 
 
-Version 4.1.8.17 (10. November 2025 - rev8151)
-    Changed: Player NickName synchronization. On entering a room, the LocalPlayer sends an update for the NickName, if the received Custom Properties have it wrong.
-    Added: Support to log in intervals .Net (non-Unity projects).
-    Changed: Order of some methods to put "helper" methods to the bottom of the file.
-    Changed: LogBasics (about the app) is now logged as normal info (no longer a warning).
-    Changed: Stopwatch for the logging is started on first log use. This sets the OnConnected time to 0. Before, it was running since creation of the SupportLogger.
-    Added: Fixed 3 digits for Milliseconds in GetFormattedTimestamp().
-
 Version 4.1.8.16 (31. July 2025 - rev8016)
     Updated: Reference doc summary for Player.IsInactive.
     Note: Minimal release to make a small update available for the Voice SDK.
