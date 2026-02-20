@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System.Collections;
 
 public class ReadyManager : MonoBehaviourPunCallbacks
 {
@@ -28,7 +29,8 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         props.Add("IsDead", false);
         props.Add("Job", "None"); // 직업 기본값은 None 추가
         props.Add("IsReady", false);
-        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        if(PhotonNetwork.InRoom) PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        else StartCoroutine(CoSetPropsWhenInRoom(props));
 
         // 버튼 이벤트 리스너 등록
         readyButton.onClick.AddListener(OnClickReadyButton);
@@ -196,5 +198,11 @@ public class ReadyManager : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.LoadLevel("TestScene_Main");
         }
+    }
+
+    private IEnumerator CoSetPropsWhenInRoom(Hashtable props)
+    {
+        yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     }
 }
