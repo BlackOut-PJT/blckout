@@ -171,6 +171,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
             Vector3 randomPos = transform.position;
             ItemData dropItem = InventoryModel.instance.DropItem();
             if (dropItem != null) photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
+            
+            //죽은 사람 마이크 차단
+            VoiceController.instance.ApplyVoiceState(); 
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
@@ -222,7 +225,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     //발자국 소리
     public void PlayFootStep()
-    {
+    {   
         Dictionary <string, AudioClip> sfxDictionary = SoundManager.instance.sfxDictionary;
 
         if (sfxDictionary.TryGetValue("Walking", out AudioClip clip))
