@@ -174,6 +174,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
+
+        VoiceController.instance.ApplyVoiceState(); //죽은 플레이어 마이크 상태 업데이트
         photonView.RPC("RPC_ChangeToDeadBody", RpcTarget.All);
     }
 

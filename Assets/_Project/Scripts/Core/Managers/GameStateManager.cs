@@ -288,6 +288,9 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("회의 소집 시작");
         if (currentState == GameState.Voting) return;
 
+        //투표 마이크 세팅
+        VoiceController.instance.SetMeetingMicMode(true);
+        
         double endTime = PhotonNetwork.Time + votingTime;
         photonView.RPC("RPC_SetGameState", RpcTarget.All, GameState.Voting, endTime);
     }

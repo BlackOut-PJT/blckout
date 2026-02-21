@@ -270,7 +270,10 @@ public class VotingManager : MonoBehaviourPunCallbacks
     }
 
     void CloseMeeting()
-    {
+    {   
+        //투표 종료 - 마이크 세팅: 거리에 따라 들리도록
+        VoiceController.instance.SetMeetingMicMode(false);
+
         if (GameStateManager.instance != null) 
         {
             if (resultText != null) {
