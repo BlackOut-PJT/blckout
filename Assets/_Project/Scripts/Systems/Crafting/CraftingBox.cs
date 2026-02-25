@@ -85,7 +85,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
         {
             if (requiredIngredients[i].itemID == heldItem.itemID && slotStates[i] == false)
             {
-                photonView.RPC("RPC_UpdateSlot", RpcTarget.All, i, true);
+                photonView.RPC("RPC_UpdateSlot", RpcTarget.AllBuffered, i, true);
                 InventoryModel.instance.RemoveItem();
                 return;
             }
@@ -125,7 +125,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
         }
 
         if (foundIndex == -1 || slotStates[foundIndex] == true) return;
-        photonView.RPC("RPC_UpdateSlot", RpcTarget.All, foundIndex, true);
+        photonView.RPC("RPC_UpdateSlot", RpcTarget.AllBuffered, foundIndex, true);
     }
 
     public void TryRetrieveItem (int slotIndex)
@@ -135,7 +135,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
         ItemData itemToReturn = requiredIngredients[slotIndex];
         InventoryModel.instance.AddItem(itemToReturn);
 
-        photonView.RPC("RPC_UpdateSlot", RpcTarget.All, slotIndex, false);
+        photonView.RPC("RPC_UpdateSlot", RpcTarget.AllBuffered, slotIndex, false);
     }
 
     //(추가) 홀드게이지용
@@ -224,7 +224,7 @@ public class CraftingBox : MonoBehaviourPun, IInteractable, IContainer, IHoldInt
 
         for (int i=0; i<slotStates.Length; i++)
         {
-            photonView.RPC(nameof(RPC_UpdateSlot), RpcTarget.All, i, false);
+            photonView.RPC(nameof(RPC_UpdateSlot), RpcTarget.AllBuffered, i, false);
         }
 
     }

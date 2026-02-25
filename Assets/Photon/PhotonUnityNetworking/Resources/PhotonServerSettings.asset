@@ -82,6 +82,7 @@ MonoBehaviour:
   - GetItem
   - RPC_OnDieVisual
   - RPC_MoveToLobby
+  - RPC_CraftSuccess
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
