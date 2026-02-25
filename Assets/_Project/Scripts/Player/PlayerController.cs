@@ -174,6 +174,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
+
+        SoundManager.instance.SFXPlay("DeadPopNoise");
         photonView.RPC("RPC_ChangeToDeadBody", RpcTarget.All);
     }
 
