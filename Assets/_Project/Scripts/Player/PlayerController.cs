@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        myAudioSource =GetComponent<AudioSource>();
+        myAudioSource = GetComponent<AudioSource>();
 
         if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
 
@@ -66,7 +66,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         if (!photonView.IsMine) return;
 
         // 2.내 캐릭터 생존여부 파악
-        if(GameUtils.IsMyPlayerDead) return;
+        // if(GameUtils.IsMyPlayerDead) return;
+        // 죽으면 유령으로 움직여야 하므로 주석 처리
 
         // 3.게임 상태 체크 + 게임 시작 하였는지 체크
         if (GameStateManager.instance.isGameStart == false || GameStateManager.instance.currentState == GameState.Voting)
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         float sens = PlayerPrefs.GetFloat("MouseSens", 1.0f);
         float mouseX = Input.GetAxis("Mouse X") * sens;
         float mouseY = Input.GetAxis("Mouse Y") * sens;
-        
+
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(x, y).normalized;
@@ -168,62 +169,91 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
+            Vector3 diePos = transform.position;
+            
             Vector3 randomPos = transform.position;
             ItemData dropItem = InventoryModel.instance.DropItem();
             if (dropItem != null) photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
+
+            // 바닥에 남겨질 시체 프리팹 추가
+            photonView.RPC(nameof(RPC_SpawnDeadBody), RpcTarget.MasterClient, diePos, photonView.Owner.NickName);
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
-        photonView.RPC("RPC_ChangeToDeadBody", RpcTarget.All);
+        photonView.RPC("RPC_BecomeGhost", RpcTarget.All);
     }
 
     [PunRPC]
     void RPC_DropItems(int itemID, Vector3 randomPos)
     {
         //FieldItem 생성 로직 -> object 사용해서 ID 전달
-        object[] data = new object[] {itemID};
+        object[] data = new object[] { itemID };
 
         //플레이어가 나가도 아이템이 남아야하기 때문에 RoomObject로 생성하기
         PhotonNetwork.InstantiateRoomObject("FieldItemPrefab", randomPos, Quaternion.identity, 0, data);
     }
 
-    // 모든 플레이어들에게 죽은 플레이어가 시체로 보이게
     [PunRPC]
-    public void RPC_ChangeToDeadBody()
+    public void RPC_BecomeGhost()
     {
-        // 애니메이터 끄기
-        if (anim != null) anim.enabled = false;
-        
-        // 스프라이트 교체
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null && deadSprite != null)
+        // 애니메이터에게 사망 신호 보내기
+        if (anim != null)
         {
-            sr.sprite = deadSprite;
-
-            // 시체는 바닥에 깔려야 하므로 그리기 순서를 낮춤
-            sr.sortingOrder = deadSortingOrder;
-
-            Debug.Log("스프라이트 교체!");
+            anim.enabled = true; // 혹시 꺼져있을까봐 확실히 키기
+            anim.SetBool("IsDead", true); // 유령으로 변경
         }
 
-        // 더 이상 충돌하지 않게 Collider 끄기
+        // 벽 뚫기 기능: 더 이상 충돌하지 않게 Collider 끄기
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        // 움직임 멈추기
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null) rb.linearVelocity = Vector2.zero;
+        // 유령 상태에서도 WASD 키를 받아서 돌아다녀야 하기 때문에 기존 움직임 봉쇄 코드 삭제
 
-        // PlayerController 스크립트 기능 정지
-        this.enabled = false;
+        // 내 캐릭터의 레이어를 "Ghost"로 변경 -> 산 사람들는 유령 못 봄
+        gameObject.layer = LayerMask.NameToLayer("Ghost");
 
-        Debug.Log("충돌, 움직임, 조작 모두 끔!");
+        // 만약 본인이 죽은 거면 다른 Ghost 보이게 변경
+        if (photonView.IsMine)
+        {
+            // 메인 카메라를 찾아서
+            Camera mainCam = Camera.main;
+            if (mainCam != null)
+            {
+                // Culling Mask에 "Ghost" 레이어를 추가해서 보이게 만들기
+                mainCam.cullingMask |= (1 << LayerMask.NameToLayer("Ghost"));
+
+                // 유령이 되면 자기 캐릭터가 반투명하게 보이도록 알파값 조절
+                if (spriteRenderer != null)
+                {
+                    Color ghostColor = spriteRenderer.color;
+                    ghostColor.a = 0.7f; // 70% 투명도
+                    spriteRenderer.color = ghostColor;
+                }
+            }
+        }
+
+        Debug.Log("유령 변신 완료!! (벽 뚫기 가능)");
+    }
+
+    [PunRPC]
+    public void RPC_SpawnDeadBody(Vector3 spawnPos, string deadPlayerName)
+    {
+        // 방장만 시체를 생성할 권한이 있음
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        // 시체가 누구인지 알 수 있게 닉네임 데이터를 배열에 담아 보내기
+        object[] data = new object[] { deadPlayerName };
+
+        // 플레이어가 나가도 유지되도록 RoomObject로 생성
+        PhotonNetwork.InstantiateRoomObject("DeadBodyPrefab", spawnPos, Quaternion.identity, 0, data);
+        
+        Debug.Log($"방장이 {deadPlayerName}의 시체를 바닥에 생성했습니다!");
     }
 
     //발자국 소리
     public void PlayFootStep()
     {
-        Dictionary <string, AudioClip> sfxDictionary = SoundManager.instance.sfxDictionary;
+        Dictionary<string, AudioClip> sfxDictionary = SoundManager.instance.sfxDictionary;
 
         if (sfxDictionary.TryGetValue("Walking", out AudioClip clip))
         {
