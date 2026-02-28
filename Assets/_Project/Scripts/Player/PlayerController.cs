@@ -76,6 +76,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
             return;
         }
 
+        // 4.채팅 입력 중이면 이동 차단
+        if (ChatUIController.IsChatFocused)
+        {
+            moveInput = Vector2.zero;
+            UpdateAnimation(Vector3.zero);
+            return;
+        }
+
         //마우스 민감도 추가
         float sens = PlayerPrefs.GetFloat("MouseSens", 1.0f);
         float mouseX = Input.GetAxis("Mouse X") * sens;
@@ -225,6 +233,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     //발자국 소리
     public void PlayFootStep()
     {
+        if (SoundManager.instance == null) return;
         Dictionary <string, AudioClip> sfxDictionary = SoundManager.instance.sfxDictionary;
 
         if (sfxDictionary.TryGetValue("Walking", out AudioClip clip))

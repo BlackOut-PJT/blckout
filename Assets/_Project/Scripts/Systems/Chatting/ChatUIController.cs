@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
@@ -6,6 +7,17 @@ using Photon.Pun;
 
 public class ChatUIController : MonoBehaviour
 {
+    public static bool IsChatFocused
+    {
+        get
+        {
+            var es = EventSystem.current;
+            if (es == null || es.currentSelectedGameObject == null) return false;
+            var field = es.currentSelectedGameObject.GetComponent<TMP_InputField>();
+            return field != null && field.isFocused;
+        }
+    }
+
     [Header("Network")]
     public LobbyChatManager lobbyChat;
 

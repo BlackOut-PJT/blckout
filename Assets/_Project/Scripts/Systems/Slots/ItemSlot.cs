@@ -26,8 +26,13 @@ public class ItemSlot : MonoBehaviour, IClickHandler
     public void OnClickAction()
     {
         SoundManager.instance.UISoundPlay("ButtonClick");
-        
+
         if (currentItem == null) return;
+        if (InventoryModel.instance != null && InventoryModel.instance.IsFull)
+        {
+            InventoryModel.instance.OnInventoryFull?.Invoke();
+            return;
+        }
         furnitureBox.RemoveItem();
     }
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Photon.Pun;
 
 public class ItemRandomizer_JY : MonoBehaviour
 {
@@ -25,42 +26,57 @@ public class ItemRandomizer_JY : MonoBehaviour
             return;
         }
 
-        // 셔플
-        List<FurnitureBox> shuffled = allBoxes.OrderBy(x => Random.value).ToList();
+        // 방 이름을 시드로 사용 → 모든 클라이언트가 동일한 셔플 결과
+        int seed = PhotonNetwork.CurrentRoom != null
+            ? PhotonNetwork.CurrentRoom.Name.GetHashCode()
+            : 0;
+        System.Random rng = new System.Random(seed);
+
+        // 이름순 정렬 (FindObjectsOfType 순서가 클라이언트마다 다를 수 있음)
+        List<FurnitureBox> sorted = allBoxes.OrderBy(x => x.gameObject.name).ToList();
+
+        // Fisher-Yates 셔플 (결정론적 — 같은 시드면 같은 결과)
+        for (int j = sorted.Count - 1; j > 0; j--)
+        {
+            int k = rng.Next(j + 1);
+            var temp = sorted[j];
+            sorted[j] = sorted[k];
+            sorted[k] = temp;
+        }
 
         int index = 0;
 
         // 1단계: 필수 아이템 배치 (화약, 성냥, 종이 각 1개 보장)
         foreach (int itemID in guaranteedItemIDs)
         {
-            if (index >= shuffled.Count) break;
+            if (index >= sorted.Count) break;
             ItemData item = ItemManager.instance.GetItem(itemID);
             if (item == null)
             {
                 Debug.LogWarning($"[ItemRandomizer_JY] itemID={itemID} 못 찾음");
                 continue;
             }
-            shuffled[index].itemData = item;
-            Debug.Log($"[ItemRandomizer_JY] {shuffled[index].name} ← {item.itemName} (필수)");
+            sorted[index].itemData = item;
+            Debug.Log($"[ItemRandomizer_JY] {sorted[index].name} ← {item.itemName} (필수)");
             index++;
         }
 
         // 2단계: 남은 가구에 랜덤 배치
-        for (int i = index; i < shuffled.Count; i++)
+        for (int i = index; i < sorted.Count; i++)
         {
             if (extraItemIDs != null && extraItemIDs.Length > 0)
             {
-                int randomID = extraItemIDs[Random.Range(0, extraItemIDs.Length)];
+                int randomID = extraItemIDs[rng.Next(0, extraItemIDs.Length)];
                 ItemData item = ItemManager.instance.GetItem(randomID);
-                shuffled[i].itemData = item;
-                Debug.Log($"[ItemRandomizer_JY] {shuffled[i].name} ← {(item != null ? item.itemName : "null")} (랜덤)");
+                sorted[i].itemData = item;
+                Debug.Log($"[ItemRandomizer_JY] {sorted[i].name} ← {(item != null ? item.itemName : "null")} (랜덤)");
             }
             else
             {
-                shuffled[i].itemData = null;
+                sorted[i].itemData = null;
             }
         }
 
-        Debug.Log($"[ItemRandomizer_JY] 총 {allBoxes.Length}개 가구에 아이템 배치 완료");
+        Debug.Log($"[ItemRandomizer_JY] 총 {allBoxes.Length}개 가구에 아이템 배치 완료 (seed={seed})");
     }
 }

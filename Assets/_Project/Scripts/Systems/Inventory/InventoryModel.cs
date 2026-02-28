@@ -44,6 +44,9 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         {
             UpdateMaxSlots();
             OnInventoryChanged?.Invoke();
+
+            if ((string)changedProps["Job"] == "Killer")
+                GiveKnifeToKiller();
         }
     }
 
@@ -92,6 +95,15 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         OnInventoryChanged?.Invoke();
 
         return dropItem;
+    }
+
+    private void GiveKnifeToKiller()
+    {
+        ItemData knife = ItemManager.instance?.GetItem(4);
+        if (knife == null) return;
+        if (items.Exists(i => i != null && i.itemID == 4)) return;
+        items.Insert(0, knife);
+        OnInventoryChanged?.Invoke();
     }
 
     ////useitem 추가
