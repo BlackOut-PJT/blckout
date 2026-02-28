@@ -10,11 +10,11 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
     public static InventoryUIController instance;
     public InventoryModel inventoryModel;
 
-    [Header ("인벤토리 UI")]
+    [Header("인벤토리 UI")]
     [SerializeField] private Image itemImage;       // Slot_0 안의 아이콘
     [SerializeField] private TextMeshProUGUI itemText;
 
-    [Header ("인벤토리 꽉 참 메시지")]
+    [Header("인벤토리 꽉 참 메시지")]
     [SerializeField] private TextMeshProUGUI fullMessageText;
 
     public IInteractable interactTarget;
@@ -168,5 +168,13 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
         SoundManager.instance.SFXPlay("ButtonClick");
         if (inventoryModel == null) return;
         inventoryModel.UseItem();
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 }

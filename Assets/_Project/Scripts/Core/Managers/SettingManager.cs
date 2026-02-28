@@ -51,4 +51,11 @@ public class SettingManager : MonoBehaviour
         settingPanel.SetActive(false);
     }
     
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
 }

@@ -71,7 +71,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             resultText.text = "";
 
             // 1. 인게임씬에 캐릭터 생성하기 위한 코드
-            Vector2 randomPos = new Vector2(0.4f,0.4f);
+            Vector2 randomPos = new Vector2(0.4f, 0.4f);
             PhotonNetwork.Instantiate("Player(main)", randomPos, Quaternion.identity);
 
             // 2. 상태 초기화
@@ -129,8 +129,8 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
 
             if (currentGameTime <= 0) currentGameTime = 0;
 
-            if(isGameEnded) return; // RPC 중복 방지용
-            
+            if (isGameEnded) return; // RPC 중복 방지용
+
             WhoWin result = CheckWinCondition();
             if (result != WhoWin.None) // 게임 종료되었다면
             {
@@ -139,7 +139,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
 
-        if(GameUtils.IsMyPlayerDead) return; // 투표 소집 전 생존여부 파악
+        if (GameUtils.IsMyPlayerDead) return; // 투표 소집 전 생존여부 파악
 
         // 3. 투표 시작 요청(우선은 M키 누르면 시작되게)
         if (Input.GetKeyDown(KeyCode.M))
@@ -203,18 +203,18 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             else notYetCnt++;
         }
 
-        if(notYetCnt>0) return WhoWin.None; // 아직 로딩 다 안 됐으면 승리 조건 체크x
-        if (survivorCount == 0) 
+        if (notYetCnt > 0) return WhoWin.None; // 아직 로딩 다 안 됐으면 승리 조건 체크x
+        if (survivorCount == 0)
         {
             isGameEnded = true;
             return WhoWin.KillerWin;
         }
-        if (killerCount == 0) 
+        if (killerCount == 0)
         {
             isGameEnded = true;
             return WhoWin.SurvivorWin;
         }
-        if (currentGameTime <= 0) 
+        if (currentGameTime <= 0)
         {
             isGameEnded = true;
             return WhoWin.SurvivorWin;
@@ -244,15 +244,16 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     public void MeetingButtonPressed(Player interacter)
-    {   
+    {
         if (currentState != GameState.Playing_OnLight && currentState != GameState.Playing_OffLight) return;
-        
+
         int currentCount = GetPlayerMeetingCount(interacter);
-        if (currentCount >= maxMeetingCount) {
+        if (currentCount >= maxMeetingCount)
+        {
             notificationSystem.ShowMessage("투표 소집은 플레이어당 한 번만 가능합니다.");
             return;
         }
-        
+
         photonView.RPC("RPC_RequestMeeting", RpcTarget.MasterClient, interacter);
     }
 
@@ -268,17 +269,17 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         if (currentCount >= maxMeetingCount) return;
 
         //회의 소집 가능 횟수 관련 CustomProperties 업데이트
-        Hashtable props = new Hashtable {{MEETING, currentCount + 1}};
+        Hashtable props = new Hashtable { { MEETING, currentCount + 1 } };
         interacter.SetCustomProperties(props);
 
         StartMeeting();
     }
 
     //플레이어의 현재 투표 소집 사용횟수 가져오는 함수
-    private int GetPlayerMeetingCount (Player player)
+    private int GetPlayerMeetingCount(Player player)
     {
         if (player.CustomProperties.ContainsKey(MEETING))
-            return (int) player.CustomProperties[MEETING];
+            return (int)player.CustomProperties[MEETING];
         return 0; //키가 없으면 0번 사용한 것.
     }
 
@@ -310,7 +311,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         foreach (Player p in PhotonNetwork.PlayerList)
         {
-            Hashtable props = new HashTable {{MEETING, 0}};
+            Hashtable props = new HashTable { { MEETING, 0 } };
             p.SetCustomProperties(props);
         }
     }
@@ -425,6 +426,14 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
                 OnGameStateChanged?.Invoke(currentState);
                 UpdateLightState();
             }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
         }
     }
     #endregion

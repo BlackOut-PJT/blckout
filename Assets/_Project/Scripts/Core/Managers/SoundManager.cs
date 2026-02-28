@@ -85,6 +85,14 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+
     #region 소리 볼륨 설정 관련 메소드
 
     public void SetVolume(string paramName, float sliderVal)

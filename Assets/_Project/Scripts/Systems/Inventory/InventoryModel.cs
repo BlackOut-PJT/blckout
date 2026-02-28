@@ -82,7 +82,7 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         }
     }
 
-    public ItemData DropItem() 
+    public ItemData DropItem()
     {
         ItemData dropItem = this.item;
 
@@ -108,5 +108,13 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         }
 
         Debug.Log($"[InventoryModel] UseItem not implemented for itemID={item.itemID}");
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 }
