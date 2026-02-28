@@ -166,10 +166,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
 
     public void Die()
-    {
-        // 킬 모션 재생
-        KillMotionController.instance.ShowKillMotion();
-        
+    {        
         if (photonView.IsMine)
         {
             Vector3 diePos = transform.position;
