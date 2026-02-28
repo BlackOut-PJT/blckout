@@ -226,12 +226,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
             }
         }
 
-        // 모든 유령 투명도 70퍼로 설정
+        
         if (spriteRenderer != null)
         {
+            // 모든 유령 투명도 70퍼로 설정
             Color ghostColor = spriteRenderer.color;
             ghostColor.a = 0.7f;
             spriteRenderer.color = ghostColor;
+
+            // Sorting Layer를 GhostTop으로 변경
+            spriteRenderer.sortingLayerName = "GhostTop";
         }
 
         // 만약 본인이 죽은 거면 다른 Ghost 보이게 변경
@@ -249,7 +253,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             SightSystemController sightSystem = Object.FindFirstObjectByType<SightSystemController>();
             if (sightSystem != null)
             {
-                sightSystem.EnableGhostVision(); // 유령 시야 ON!
+                sightSystem.EnableGhostVision();
             }
         }
 

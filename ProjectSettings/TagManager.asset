@@ -59,5 +59,8 @@ TagManager:
   - name: UI
     uniqueID: 3232042669
     locked: 0
+  - name: GhostTop
+    uniqueID: 1163818483
+    locked: 0
   m_RenderingLayers:
   - Default
