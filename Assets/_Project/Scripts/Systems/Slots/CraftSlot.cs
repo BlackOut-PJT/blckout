@@ -30,6 +30,7 @@ public class CraftSlot : MonoBehaviour, IClickHandler
     {
         if (!hasItem) return;
 
+        SoundManager.instance.UISoundPlay("ButtonClick");
         craftingBox.TryRetrieveItem(slotIndex);
     }
 

@@ -99,8 +99,10 @@ public class VotingManager : MonoBehaviourPunCallbacks
 
     public void OnClickVote(int targetID)
     {
+        
         if (hasVoted) return; //이미 투표했으면 차단
-
+        
+        SoundManager.instance.UISoundPlay("ButtonClick");
         photonView.RPC("RPC_CastVote", RpcTarget.All, targetID);
     }
 

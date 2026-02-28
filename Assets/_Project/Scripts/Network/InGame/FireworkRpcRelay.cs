@@ -28,7 +28,6 @@ public class FireworkRpcRelay : MonoBehaviourPun
     {
         if(!PhotonNetwork.InRoom) return;
 
-        SoundManager.instance.SFXPlay("FireworkNoise");
         //duration 음수면 기본값
         if(duration <= 0f) duration = defaultDuration;
 
@@ -39,6 +38,8 @@ public class FireworkRpcRelay : MonoBehaviourPun
     [PunRPC]
     private void RPC_Firework(float duration)
     {
+        SoundManager.instance.SFXPlay("FireworkNoise"); //효과음 재생
+        
         //씬에서 SightSystemController 찾기
         var sight = FindFirstObjectByType<SightSystemController>();
 

@@ -84,6 +84,7 @@ MonoBehaviour:
   - RPC_MoveToLobby
   - RPC_BecomeGhost
   - RPC_SpawnDeadBody
+  - RPC_CraftSuccess
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

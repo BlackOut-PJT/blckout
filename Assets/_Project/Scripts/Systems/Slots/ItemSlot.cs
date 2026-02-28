@@ -25,6 +25,8 @@ public class ItemSlot : MonoBehaviour, IClickHandler
 
     public void OnClickAction()
     {
+        SoundManager.instance.UISoundPlay("ButtonClick");
+        
         if (currentItem == null) return;
         furnitureBox.RemoveItem();
     }

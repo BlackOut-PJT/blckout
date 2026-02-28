@@ -180,7 +180,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
+
         photonView.RPC("RPC_BecomeGhost", RpcTarget.All);
+        SoundManager.instance.SFXPlay("DeadPopNoise");
     }
 
     [PunRPC]

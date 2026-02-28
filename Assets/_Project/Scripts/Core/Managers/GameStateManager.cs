@@ -71,7 +71,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
             resultText.text = "";
 
             // 1. 인게임씬에 캐릭터 생성하기 위한 코드
-            Vector2 randomPos = Random.insideUnitCircle * 2.0f;
+            Vector2 randomPos = new Vector2(0.4f,0.4f);
             PhotonNetwork.Instantiate("Player(main)", randomPos, Quaternion.identity);
 
             // 2. 상태 초기화

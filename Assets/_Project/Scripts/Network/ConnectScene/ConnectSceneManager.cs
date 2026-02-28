@@ -151,6 +151,7 @@ public class ConnectSceneManager : MonoBehaviour
                 //공개방 상태로 변경
                 isPublicRoom = true;
                 //버튼 UI 표시 업데이트
+                PlayButtonClick();
                 UpdatePublicPrivateVisual();
             });
         }
@@ -162,6 +163,7 @@ public class ConnectSceneManager : MonoBehaviour
             ui.btnPrivate.onClick.AddListener(() =>
             {
                 isPublicRoom = false;
+                PlayButtonClick();
                 UpdatePublicPrivateVisual();
             });
         }
@@ -416,7 +418,6 @@ public class ConnectSceneManager : MonoBehaviour
     //Public/Private 버튼의 UI 상태를 표시(현재는 interactable로만 표현)
     private void UpdatePublicPrivateVisual()
     {
-        SoundManager.instance.UISoundPlay("ButtonClick");
         //Public이 선택된 상태면 Public 버튼은 비활성(interactable=false 느낌으로), Private 버튼은 활성
         if (ui.btnPublic != null) ui.btnPublic.interactable = !isPublicRoom;
         //Private이 선택된 상태면 반대로
@@ -469,4 +470,8 @@ public class ConnectSceneManager : MonoBehaviour
         CloseJoinPasswordPopup();
     }
     
+    private void PlayButtonClick()
+    {
+        SoundManager.instance.UISoundPlay("ButtonClick");
+    }
 }

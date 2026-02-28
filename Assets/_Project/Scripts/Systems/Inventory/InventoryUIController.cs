@@ -72,7 +72,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
             RectTransform prevRT = slotRoots[slotRoots.Count - 1].GetComponent<RectTransform>();
             RectTransform newRT = newSlot.GetComponent<RectTransform>();
             float slotHeight = prevRT.rect.height;
-            newRT.anchoredPosition = prevRT.anchoredPosition + new Vector2(0, -(slotHeight + 8f));
+            newRT.anchoredPosition = prevRT.anchoredPosition + new Vector2(0, -(slotHeight + 8f + 40f));
 
             // 자식에서 아이콘 찾기
             Image icon = newSlot.transform.Find(itemImage.gameObject.name)?.GetComponent<Image>();
@@ -150,6 +150,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
         if (interactTarget is IContainer container)
         {
             Debug.Log("OnClickInventory 실행됨");
+            SoundManager.instance.UISoundPlay("ButtonClick");
             container.AddItem(inventoryModel.item);
             inventoryModel.RemoveItem();
         }
@@ -164,6 +165,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
     ////추가
     public void OnClickUseItem()
     {
+        SoundManager.instance.SFXPlay("ButtonClick");
         if (inventoryModel == null) return;
         inventoryModel.UseItem();
     }
