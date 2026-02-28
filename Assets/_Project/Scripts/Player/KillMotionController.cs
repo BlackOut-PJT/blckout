@@ -25,22 +25,28 @@ public class KillMotionController : MonoBehaviour
 
     private IEnumerator PlayAndHideRoutine()
     {
-        // 킬 애니메이션 재생 시작!
         killAnimator.SetTrigger("PlayKill");
 
-        // 유니티가 'Kill_Action' 상태로 완전히 넘어갈 때까지 무한 대기
+        float emergencyTimer = 0f;
+        // 애니메이션이 넘어갈 때까지 기다리되, 최대 1초까지만 기다림 -> 무한 루프 방지
         while (!killAnimator.GetCurrentAnimatorStateInfo(0).IsName("Kill_Action"))
         {
+            emergencyTimer += Time.unscaledDeltaTime; // 멈춘 시간과 무관하게 실제 시간 계산
+            if (emergencyTimer > 1.0f) break; // 1초가 넘어가면 강제 진행
             yield return null;
         }
 
-        // 킬 애니메이션의 길이 가져오기
-        float animLength = killAnimator.GetCurrentAnimatorStateInfo(0).length;
+        // 애니메이션 길이 가져오기
+        float animLength = 1.5f;
+        if (killAnimator.GetCurrentAnimatorStateInfo(0).IsName("Kill_Action"))
+        {
+            animLength = killAnimator.GetCurrentAnimatorStateInfo(0).length;
+        }
 
-        // 알아낸 길이만큼 기다리기
-        yield return new WaitForSeconds(animLength);
+        // 시간이 멈춰 있어도 현실 시간으로 정확히 대기
+        yield return new WaitForSecondsRealtime(animLength);
 
-        // 애니메이션이 끝나는 순간 정확히 UI 끄기
+        // 안전하게 UI 끄기
         killMotionPanel.SetActive(false);
     }
 }

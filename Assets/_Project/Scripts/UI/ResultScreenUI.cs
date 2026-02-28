@@ -42,24 +42,31 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
 
     private void ShowPanel(GameStateManager.WhoWin winner)
     {
-        // 결과창 패널 활성화
-        resultPanel.gameObject.SetActive(true);
+        StartCoroutine(ShowPanelDelayed(winner));
+    }
 
-        // 결과 텍스트 띄우기
+    // 킬 모션이 끝날 때까지 기다렸다가 띄워주는 코루틴
+    private System.Collections.IEnumerator ShowPanelDelayed(GameStateManager.WhoWin winner)
+    {
+        // 킬 모션 애니메이션이 끝날 때까지 2.5초 정도 여유롭게 기다려줌
+        yield return new WaitForSeconds(2.5f);
+
+        resultPanel.gameObject.SetActive(true); // 결과창 패널 활성화
+
         if (resultText != null)
         {
             resultText.gameObject.SetActive(true);
-            if (winner == GameStateManager.WhoWin.SurvivorWin) 
+            if (winner == GameStateManager.WhoWin.SurvivorWin)
             {
                 resultText.text = "<color=green>SURVIVOR WIN!</color>";
             }
-            else 
+            else
             {
                 resultText.text = "<color=red>KILLER WIN!</color>";
             }
         }
 
-        reloadButton.interactable = true; // 돌아가기 버튼 상호작용 키기
+        reloadButton.interactable = true; // 돌아가기 버튼 상호작용 켜기
     }
 
     private void OnDestroy()
