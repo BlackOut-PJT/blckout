@@ -43,16 +43,17 @@ public class SightSystemController : MonoBehaviour
     private bool isBlackout;//현재 암전 켜져있는지 저장
     private bool isFireworkActive; //폭죽 작동 중인지 체크
     private Coroutine fireworkCoroutine;
+    private bool isLocalPlayerGhost = false; // 유령인지 확인하는 변수
 
     private void Start()
     {
         if (grayscaleVolume != null) grayscaleVolume.weight = 0f;
     }
-    
+
     private void OnEnable()
     {
         //씬에 GameStateManager 싱글톤 존재하는지 확인
-        if(GameStateManager.instance != null)
+        if (GameStateManager.instance != null)
         {
             //gamestatemanager의 상태 변경 이벤트를 구독 (바뀌면 HandleGameStateChanaged 호출)
             GameStateManager.instance.OnGameStateChanged += HandleGameStateChanged;
@@ -69,13 +70,13 @@ public class SightSystemController : MonoBehaviour
             Debug.LogWarning("[SightSystemController] GameStateManager.instance is null. 씬에 GameStateManager가 있는지 확인!");
         }
     }
-    
+
 
     //비활시 자동 호출
     private void OnDisable()
     {
         //싱글톤 확인하고
-        if(GameStateManager.instance != null)
+        if (GameStateManager.instance != null)
         {
             //이벤트 구독 해제
             GameStateManager.instance.OnGameStateChanged -= HandleGameStateChanged;
@@ -85,6 +86,12 @@ public class SightSystemController : MonoBehaviour
     //visionLight가 연결 안 됐으면 계속 연결 시도 (성공하면 더 이상 안 함)
     private void Update()
     {
+        if (isLocalPlayerGhost)
+        {
+            if (globalLight != null) globalLight.intensity = globalIntensity_Normal; // 강제로 1 유지
+            if (grayscaleVolume != null) grayscaleVolume.weight = 0f; // 흑백 필터 강제 해제
+        }
+        
         if (visionLight == null)
             TryBindLocalVisionLightByName();
     }
@@ -94,16 +101,16 @@ public class SightSystemController : MonoBehaviour
     {
         //씬에 있는 PhotonView 훑어서 IsMine 플레이어 찾음
         PhotonView[] views = FindObjectsByType<PhotonView>(FindObjectsSortMode.None);
-        foreach(var pv in views)
+        foreach (var pv in views)
         {
-            if(!pv.IsMine) continue;
+            if (!pv.IsMine) continue;
 
             //자식 이름이 정확인 VisionLight인 Transform 찾기
             Transform t = pv.transform.Find("VisionLight");
-            if(t== null) continue;
+            if (t == null) continue;
 
             Light2D found = t.GetComponent<Light2D>();
-            if(found == null) continue;
+            if (found == null) continue;
 
             visionLight = found;
 
@@ -124,14 +131,14 @@ public class SightSystemController : MonoBehaviour
         //씬에 있는 tag가 player인 오브젝트 배열로 가져옴.(Player 프리팹 tag: player 설정해야함..)
         var players = GameObject.FindGameObjectsWithTag("Player");
 
-        foreach(var p in players)
+        foreach (var p in players)
         {
             var pv = p.GetComponent<PhotonView>();
-            if(pv==null) continue;
+            if (pv == null) continue;
 
             //플레이어 프리팹 내부에서 canvas 이름의 자식 오브젝트 찾음
-            Transform nicknameText = p.transform.Find("Canvas/"+nicknameTextName);
-            if(nicknameText == null) continue;
+            Transform nicknameText = p.transform.Find("Canvas/" + nicknameTextName);
+            if (nicknameText == null) continue;
             //이 플레이어가 내 로컬 플레이어인지 확인
             if (pv.IsMine)
             {
@@ -152,11 +159,14 @@ public class SightSystemController : MonoBehaviour
     //GameStateManager에서 상태가 바뀌면 이벤트로 호출되는 함수
     private void HandleGameStateChanged(GameState state)
     {
+        // 유령이면 상태 변경 무시
+        if (isLocalPlayerGhost) return;
+
         // 폭죽이 터져있는 동안에는 상태 변경이 와도 무시 (폭죽이 우선)
         if (isFireworkActive) return;
 
         // 새 상태가 '암전 상태(Playing_OffLight)'면 암전 연출 켜기
-        if(state == offLightState) EnableBlackout();
+        if (state == offLightState) EnableBlackout();
         //그 외 암전 연출 끔
         else DisableBlackout();
     }
@@ -170,41 +180,48 @@ public class SightSystemController : MonoBehaviour
             return;
         }
 
+        // 유령이면 무조건 Normal로 덮어쓰기
+        if (isLocalPlayerGhost) 
+        {
+            ApplyNormalVisual();
+            return;
+        }
+
         if (isBlackout) ApplyBlackoutVisual();
         else ApplyNormalVisual();
     }
 
     private void ApplyNormalVisual()
     {
-        if(globalLight != null) globalLight.intensity = globalIntensity_Normal;
-        if(visionLight != null)
+        if (globalLight != null) globalLight.intensity = globalIntensity_Normal;
+        if (visionLight != null)
         {
             visionLight.intensity = visionIntensity_Normal;
             SetLightRadius(visionLight, visionRadius_Normal);
         }
 
-        if(grayscaleVolume != null) grayscaleVolume.weight = 0f;
+        if (grayscaleVolume != null) grayscaleVolume.weight = 0f;
         HideOtherNicknames(false);
     }
 
     private void ApplyBlackoutVisual()
     {
-        if(globalLight != null) globalLight.intensity = globalIntensity_Blackout;
-        if(visionLight != null)
+        if (globalLight != null) globalLight.intensity = globalIntensity_Blackout;
+        if (visionLight != null)
         {
             visionLight.enabled = true;
             visionLight.intensity = visionIntensity_OffLight;
             SetLightRadius(visionLight, visionRadius_OffLight);
         }
 
-        if(grayscaleVolume != null) grayscaleVolume.weight = 1f;
+        if (grayscaleVolume != null) grayscaleVolume.weight = 1f;
         HideOtherNicknames(true);
     }
 
     private void ApplyFireworkVisual()
     {
-        if(globalLight != null) globalLight.intensity = globalIntensity_Firework;
-        
+        if (globalLight != null) globalLight.intensity = globalIntensity_Firework;
+
         // 폭죽 중에는 흑백 끔
         if (grayscaleVolume != null) grayscaleVolume.weight = 0f;
 
@@ -216,25 +233,28 @@ public class SightSystemController : MonoBehaviour
     //암전 연출 ON: 전체 어둡게 + 시야 축소 + 흑백 켜기
     public void EnableBlackout()
     {
-        if(isFireworkActive) return;
+        // 유령이면 암전 무시
+        if (isLocalPlayerGhost) return;
+
+        if (isFireworkActive) return;
         //if(isBlackout) return;
 
         isBlackout = true;
         ApplyBlackoutVisual();
 
         // 디버그용 로그(상태 토글이 실제로 호출됐는지 확인 가능)
-        Debug.Log("[SightSystemController] Blackout ENABLED"); 
+        Debug.Log("[SightSystemController] Blackout ENABLED");
     }
 
     public void DisableBlackout()
     {
-        if(isFireworkActive) return;
+        if (isFireworkActive) return;
         //if(!isBlackout) return;
 
         isBlackout = false;
         ApplyNormalVisual();
 
-        Debug.Log("[SightSystemController] Blackout DISABLED"); 
+        Debug.Log("[SightSystemController] Blackout DISABLED");
         // 디버그용 로그
     }
 
@@ -264,13 +284,13 @@ public class SightSystemController : MonoBehaviour
         fireworkCoroutine = null;
 
         //폭죽 끝나면 현재 gamestate로 복귀
-        if(GameStateManager.instance != null)
+        if (GameStateManager.instance != null)
         {
             //currentState가 OffLight면 EnableBlackout
             HandleGameStateChanged(GameStateManager.instance.currentState);
             ApplyCurrentVisualState();
         }
-        
+
         Debug.Log("[SightSystemController] Firework DISABLED");
     }
 
@@ -279,6 +299,14 @@ public class SightSystemController : MonoBehaviour
     {
         // URP 2D Light2D는 타입이 뭐든(버전에 따라) 이 값이 반경 역할을 함
         light2D.pointLightOuterRadius = radius;
+    }
+
+    // 유령이 되었을 때 호출할 함수
+    public void EnableGhostVision()
+    {
+        isLocalPlayerGhost = true;
+        ApplyNormalVisual(); // 즉시 맵을 밝히고 흑백을 끕니다!
+        Debug.Log("[SightSystemController] 유령 시야 발동! 이제 암전에 걸리지 않습니다.");
     }
 
 }

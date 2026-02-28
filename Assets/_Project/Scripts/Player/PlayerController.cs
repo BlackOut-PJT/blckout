@@ -245,19 +245,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
                 mainCam.cullingMask |= (1 << LayerMask.NameToLayer("Ghost"));
             }
 
-            // 1. (선택) SightSystem은 그대로 꺼줍니다.
-            GameObject sightSystem = GameObject.Find("SightSystem");
-            if (sightSystem != null) sightSystem.SetActive(false);
-
-            // 2. 맵 전체를 비추는 태양광(Global Light 2D)을 찾아서 최대치로 밝게 켭니다!
-            GameObject globalLightObj = GameObject.Find("Global Light 2D");
-            if (globalLightObj != null)
+            // 컨트롤러에게 유령 모드 발동 명령
+            SightSystemController sightSystem = Object.FindFirstObjectByType<SightSystemController>();
+            if (sightSystem != null)
             {
-                // URP 2D 조명 컴포넌트를 가져와서
-                UnityEngine.Rendering.Universal.Light2D light2D = globalLightObj.GetComponent<UnityEngine.Rendering.Universal.Light2D>();
-
-                // 조명 밝기(intensity)를 1f(100%)로 올려서 맵 전체를 환하게 만듭니다!
-                if (light2D != null) light2D.intensity = 1f;
+                sightSystem.EnableGhostVision(); // 유령 시야 ON!
             }
         }
 
