@@ -137,7 +137,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
 
     IEnumerator FullMessageCoroutine()
     {
-        fullMessageText.text = "손이 꽉 찼습니다!";
+        fullMessageText.text = "손이 꽉\n찼습니다!";
         fullMessageText.gameObject.SetActive(true);
         yield return new WaitForSeconds(2f);
         fullMessageText.gameObject.SetActive(false);
