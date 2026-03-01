@@ -14,7 +14,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
     [SerializeField] private Image hideImage; // 비활성화 역할 스킬 이미지
 
     [Header("스킬 설정")]
-    [SerializeField] private float coolTime = 40f; // 쿨타임 40초(임시)
+    [SerializeField] private float coolTime = 180f; // 쿨타임 40초(임시)
     [SerializeField] private float killRange = 1.5f; // 사정거리는 1.5유닛
 
     private bool isCoolDown = false; // 스킬쿨 세는 중인지

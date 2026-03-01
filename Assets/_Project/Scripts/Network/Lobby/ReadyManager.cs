@@ -169,7 +169,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
 
         Debug.Log($"[디버그] 현재 인원: {curPlayerCnt} / 최대 인원: {maxPlayer}");
 
-        if (curPlayerCnt <= maxPlayer)
+        if (curPlayerCnt <= maxPlayer && curPlayerCnt > 1)
         {
             // 모두 준비 상태인지 확인
             foreach (Player p in PhotonNetwork.PlayerList)
