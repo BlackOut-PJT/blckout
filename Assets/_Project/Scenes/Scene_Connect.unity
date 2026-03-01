@@ -2319,6 +2319,19 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
+--- !u!114 &340586279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340586275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WebGLInput::WebGLSupport.WebGLInput
+  showHtmlElement: 0
 --- !u!1 &351910923
 GameObject:
   m_ObjectHideFlags: 0
@@ -4759,12 +4772,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3864117311158646192, guid: fad5b18e3355b2a4484794bffd0c6917, type: 3}
       insertIndex: -1
       addedObject: {fileID: 739449228}
+    - targetCorrespondingSourceObject: {fileID: 3864117311158646192, guid: fad5b18e3355b2a4484794bffd0c6917, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 739449229}
     - targetCorrespondingSourceObject: {fileID: 6308712028887185309, guid: fad5b18e3355b2a4484794bffd0c6917, type: 3}
       insertIndex: -1
       addedObject: {fileID: 739449227}
     - targetCorrespondingSourceObject: {fileID: 4324056282760881899, guid: fad5b18e3355b2a4484794bffd0c6917, type: 3}
       insertIndex: -1
       addedObject: {fileID: 340586278}
+    - targetCorrespondingSourceObject: {fileID: 4324056282760881899, guid: fad5b18e3355b2a4484794bffd0c6917, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 340586279}
     - targetCorrespondingSourceObject: {fileID: 6446528392970907403, guid: fad5b18e3355b2a4484794bffd0c6917, type: 3}
       insertIndex: -1
       addedObject: {fileID: 340586277}
@@ -5020,6 +5039,19 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
+--- !u!114 &739449229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739449225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WebGLInput::WebGLSupport.WebGLInput
+  showHtmlElement: 0
 --- !u!1 &828123432
 GameObject:
   m_ObjectHideFlags: 0
@@ -8554,6 +8586,7 @@ GameObject:
   - component: {fileID: 1575493421}
   - component: {fileID: 1575493420}
   - component: {fileID: 1575493419}
+  - component: {fileID: 1575493422}
   m_Layer: 5
   m_Name: RoomPasswordInput
   m_TagString: Untagged
@@ -8721,6 +8754,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575493417}
   m_CullTransparentMesh: 1
+--- !u!114 &1575493422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1575493417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WebGLInput::WebGLSupport.WebGLInput
+  showHtmlElement: 0
 --- !u!1 &1575520730
 GameObject:
   m_ObjectHideFlags: 0
@@ -11471,7 +11517,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4210148353275878239, guid: 6bd3466456e42e94cbef4424392c6cd4, type: 3}
   m_PrefabInstance: {fileID: 871181856563410504}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 871181856563410505}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
@@ -12206,8 +12252,29 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7385462215459329694, guid: 6bd3466456e42e94cbef4424392c6cd4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 871181856563410506}
   m_SourcePrefab: {fileID: 100100000, guid: 6bd3466456e42e94cbef4424392c6cd4, type: 3}
+--- !u!1 &871181856563410505 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7385462215459329694, guid: 6bd3466456e42e94cbef4424392c6cd4, type: 3}
+  m_PrefabInstance: {fileID: 871181856563410504}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &871181856563410506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 871181856563410505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc33a39070010f94fb1c2dd721c1286d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: WebGLInput::WebGLSupport.WebGLInput
+  showHtmlElement: 0
 --- !u!114 &2958614516448482039 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6150315573573185961, guid: 6bd3466456e42e94cbef4424392c6cd4, type: 3}
