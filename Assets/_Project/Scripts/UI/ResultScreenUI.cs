@@ -86,25 +86,22 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
 
     public void OnClickReloadButton()
     {
-        // 방장만 누를 수 있게 차단
         if (!PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("방장만 재시작을 누를 수 있습니다!");
+            Debug.Log("방장만 로비로 돌아가기를 누를 수 있습니다!");
             return;
         }
 
         reloadButton.interactable = false;
 
-        string newRoomName = PhotonNetwork.CurrentRoom.Name + "_Retry_" + Random.Range(1000, 9999);
-        photonView.RPC("RPC_MigrateToNewRoom", RpcTarget.All, newRoomName);
+        // 모두에게 방을 버리고 초기 화면으로 도망가라고 명령!
+        photonView.RPC("RPC_DestroyRoomAndLeave", RpcTarget.All);
     }
 
     [PunRPC]
-    public void RPC_MigrateToNewRoom(string newRoomName)
+    public void RPC_DestroyRoomAndLeave()
     {
-        nextRoomNameToJoin = newRoomName;
-
-        // 개인 데이터 완벽 초기화 (유령 스폰 방지)
+        // 1. 혹시 모를 망령(유령 스폰 버그 등)을 막기 위해 내 개인 데이터 싹 삭제!
         Hashtable clearProps = new Hashtable();
         foreach (var key in PhotonNetwork.LocalPlayer.CustomProperties.Keys)
         {
@@ -112,50 +109,17 @@ public class ResultScreenUI : MonoBehaviourPunCallbacks
         }
         PhotonNetwork.LocalPlayer.SetCustomProperties(clearProps);
 
+        // 2. 현재 꼬인 방을 가차 없이 버리고 나갑니다. (LeaveRoom)
         PhotonNetwork.LeaveRoom();
     }
 
-    // ★ 여기에 OnConnectedToMaster는 절대 있으면 안 됩니다! ★
-
-    public override void OnJoinedLobby()
+    // 3. 방을 완벽하게 빠져나왔을 때 자동으로 실행되는 콜백 함수
+    public override void OnLeftRoom()
     {
-        base.OnJoinedLobby();
+        base.OnLeftRoom();
 
-        if (!string.IsNullOrEmpty(nextRoomNameToJoin))
-        {
-            RoomOptions options = new RoomOptions();
-            options.MaxPlayers = 8; // 본인 게임 인원수에 맞게 변경
-
-            PhotonNetwork.JoinOrCreateRoom(nextRoomNameToJoin, options, TypedLobby.Default);
-        }
-    }
-
-    public override void OnJoinedRoom()
-    {
-        base.OnJoinedRoom();
-
-        if (!string.IsNullOrEmpty(nextRoomNameToJoin))
-        {
-            nextRoomNameToJoin = ""; // 이사 완료! 메모장 초기화
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                // [수정] 방을 파자마자 바로 로딩하면 포톤 내부 로직과 충돌하므로,
-                // 코루틴을 통해 아주 잠깐 숨을 고른 뒤에 씬을 이동시킵니다!
-                StartCoroutine(MigrateLoadRoutine());
-            }
-        }
-    }
-
-    private System.Collections.IEnumerator MigrateLoadRoutine()
-    {
-        // 포톤이 백그라운드에서 혼자 하던 작업(자동 씬 동기화 등)이 끝날 때까지 잠시 기다려줍니다.
-        yield return new WaitForSeconds(0.5f);
-
-        // 혹시라도 이전 로딩 충돌 때문에 멈춰버린 네트워크 통신 큐를 강제로 뚫어줍니다. (안전장치)
-        PhotonNetwork.IsMessageQueueRunning = true;
-
-        // 이제 안전하게 다 같이 대기룸으로 이동!!
-        PhotonNetwork.LoadLevel("Scene_Lobby");
+        // 4. 포톤 네트워크 로딩이 아니라, 유니티의 기본 씬 이동을 사용해서 완전히 새 출발!
+        // ⚠️ 주의: 괄호 안에 유저님의 진짜 첫 접속 씬 이름을 정확히 적어주세요!
+        SceneManager.LoadScene("Scene_Connect");
     }
 }

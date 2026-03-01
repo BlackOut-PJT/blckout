@@ -176,5 +176,13 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
         {
             instance = null;
         }
+
+        InventoryModel.OnPlayerSpawned -= ConnectToModel;
+
+        if (inventoryModel != null)
+        {
+            inventoryModel.OnInventoryChanged -= UpdateInventoryUI;
+            inventoryModel.OnInventoryFull -= ShowFullMessage;
+        }
     }
 }
