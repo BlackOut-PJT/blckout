@@ -3795,7 +3795,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConnectSceneManager
   ui: {fileID: 739449223}
   NickNameInput: {fileID: 739449228}
-  maxPlayers: 3
+  maxPlayers: 8
 --- !u!4 &645396683
 Transform:
   m_ObjectHideFlags: 0
