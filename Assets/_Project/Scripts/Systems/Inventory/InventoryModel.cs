@@ -102,7 +102,7 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         ItemData knife = ItemManager.instance?.GetItem(4);
         if (knife == null) return;
         if (items.Exists(i => i != null && i.itemID == 4)) return;
-        items.Insert(0, knife);
+        items.Insert(1, knife);
         OnInventoryChanged?.Invoke();
     }
 
