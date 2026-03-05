@@ -9,17 +9,15 @@ public class InventoryModel : MonoBehaviourPunCallbacks
 {
     public static InventoryModel instance;
 
-    //플레이어 인벤토리 모델이 생성된 것을 알리는 정적 이벤트
-    //매개변수로 자기자신(InventoryModel)을 넘겨줌
     public static event Action<InventoryModel> OnPlayerSpawned;
 
     public List<ItemData> items = new List<ItemData>();
     public int maxSlots = 1;
 
-    // 하위호환용 프로퍼티: 기존 코드에서 inventoryModel.item 접근하는 곳 유지
     public ItemData item => items.Count > 0 ? items[0] : null;
 
-    public bool IsFull => items.Count >= maxSlots;
+    // 💡 수정됨: 리스트 전체 크기가 아니라, '0번 손'에 물건이 있는지만 검사합니다.
+    public bool IsFull => items.Count > 0 && items[0] != null;
 
     public Action OnInventoryChanged;
     public Action OnInventoryFull;
@@ -30,7 +28,6 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         {
             instance = this;
             UpdateMaxSlots();
-            //플레이어 생서되면 => InventoryModel을 InventoryUIController 쪽으로 전달.
             OnPlayerSpawned?.Invoke(this);
         }
     }
@@ -62,6 +59,13 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         {
             maxSlots = 1;
         }
+
+        // 💡 핵심: maxSlots 개수만큼 미리 빈칸(null)을 만들어 배열처럼 고정시킵니다.
+        // 크루원은 1칸, 킬러는 2칸의 null이 미리 생깁니다.
+        while (items.Count < maxSlots)
+        {
+            items.Add(null);
+        }
     }
 
     public bool AddItem(ItemData item)
@@ -71,27 +75,30 @@ public class InventoryModel : MonoBehaviourPunCallbacks
             OnInventoryFull?.Invoke();
             return false;
         }
-        items.Add(item);
+        
+        // 💡 수정됨: items.Add()로 리스트를 늘리는 대신, 0번 자리에 덮어씌웁니다.
+        items[0] = item; 
         OnInventoryChanged?.Invoke();
         return true;
     }
 
     public void RemoveItem()
     {
-        if (items.Count > 0)
+        if (items.Count > 0 && items[0] != null)
         {
-            items.RemoveAt(0);
+            // 💡 수정됨: RemoveAt(0)으로 칼을 당겨오지 않고, 0번 자리만 깔끔하게 비웁니다.
+            items[0] = null; 
             OnInventoryChanged?.Invoke();
         }
     }
 
     public ItemData DropItem()
     {
-        ItemData dropItem = this.item;
+        if (items.Count <= 0 || items[0] == null) return null;
 
-        if (items.Count <= 0) return null;
-
-        items.RemoveAt(0);
+        ItemData dropItem = items[0];
+        // 💡 수정됨: 버릴 때도 0번 자리만 비웁니다.
+        items[0] = null; 
         OnInventoryChanged?.Invoke();
 
         return dropItem;
@@ -102,11 +109,15 @@ public class InventoryModel : MonoBehaviourPunCallbacks
         ItemData knife = ItemManager.instance?.GetItem(4);
         if (knife == null) return;
         if (items.Exists(i => i != null && i.itemID == 4)) return;
-        items.Insert(0, knife);
-        OnInventoryChanged?.Invoke();
+        
+        // 💡 수정됨: UpdateMaxSlots에서 1번 방(null)을 미리 만들어 뒀으니, 바로 덮어씁니다.
+        if (items.Count > 1)
+        {
+            items[1] = knife;
+            OnInventoryChanged?.Invoke();
+        }
     }
 
-    ////useitem 추가
     public void UseItem()
     {
         if (!photonView.IsMine) return;
