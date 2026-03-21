@@ -13,6 +13,7 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
     [Header("인벤토리 UI")]
     [SerializeField] private Image itemImage;       // Slot_0 안의 아이콘
     [SerializeField] private TextMeshProUGUI itemText;
+    private List<Button> slotUseButtons = new List<Button>();//사용하기 버튼
 
     [Header("인벤토리 꽉 참 메시지")]
     [SerializeField] private TextMeshProUGUI fullMessageText;
@@ -50,6 +51,10 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
             GameObject slot0 = itemImage.transform.parent.gameObject;
             slotRoots.Add(slot0);
             slotIcons.Add(itemImage);
+
+            Button btn0 = slot0.transform.Find("Button")?.GetComponent<Button>();
+            if (btn0 == null) btn0 = slot0.GetComponentInChildren<Button>();
+            slotUseButtons.Add(btn0);
         }
 
         EnsureSlotCount(inventoryModel.maxSlots);
@@ -78,8 +83,13 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
             Image icon = newSlot.transform.Find(itemImage.gameObject.name)?.GetComponent<Image>();
             if (icon == null) icon = newSlot.GetComponentInChildren<Image>();
 
+            // 자식에서 버튼 찾기
+            Button btn = newSlot.transform.Find("Button")?.GetComponent<Button>();
+            if (btn == null) btn = newSlot.GetComponentInChildren<Button>();
+
             slotRoots.Add(newSlot);
             slotIcons.Add(icon);
+            slotUseButtons.Add(btn);
         }
 
         // 불필요한 슬롯 숨기기
@@ -125,6 +135,23 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
         else
         {
             itemText.gameObject.SetActive(false);
+        }
+
+        //사용하기 버튼 표시/숨김
+        bool isKiller = inventoryModel.maxSlots == 2;
+
+        for (int i = 0; i < slotUseButtons.Count; i++)
+        {
+            if (slotUseButtons[i] == null) continue;
+
+            bool hasItem = i < inventoryModel.items.Count && inventoryModel.items[i] != null;
+            bool showButton = hasItem;
+
+            // 킬러의 2번 슬롯(인덱스 1, 칼 슬롯)은 버튼 숨김
+            if (isKiller && i == 1)
+                showButton = false;
+
+            slotUseButtons[i].gameObject.SetActive(showButton);
         }
     }
 
