@@ -86,12 +86,13 @@ public class DeadBody : MonoBehaviourPun, IInteractable
 
         //Destroy는 여기서 방장만
         if (PhotonNetwork.IsMasterClient)
+        {
+            //회의 소집(MasterClient만 호출. 내부에서 RPC로 전체에 전파됨
+            if(GameStateManager.instance != null)
+                GameStateManager.instance.StartMeeting();
+
             PhotonNetwork.Destroy(gameObject);
-
-        //TODO: 여기서 "회의/투표 시작"을 연결하면 됩니다..!
-        //주의: 투표는 보통 방장만 시작시키고, 다른 클라는 UI만 열게 만드는 구조가 안정적
-        //예) VoteManager.Instance.StartVote();
-
+        }
     }
 
     //TEST
