@@ -85,6 +85,15 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    public void BGMStop()
+{
+    if (bgmSource != null && bgmSource.isPlaying)
+    {
+        bgmSource.Stop();
+        Debug.Log("BGM 정지");
+    }
+}
+
     private void OnDestroy()
     {
         if (instance == this)
