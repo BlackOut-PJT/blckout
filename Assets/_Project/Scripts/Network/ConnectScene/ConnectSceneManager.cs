@@ -210,8 +210,10 @@ public class ConnectSceneManager : MonoBehaviour
     {
         //ui나 input이 없으면 빈 문자열 반환(NullReference 방지)
         if (ui == null || ui.nickNameInput == null) return "";
-        //입력값 앞뒤 공백 제거해서 반환
-        return ui.nickNameInput.text.Trim();
+        //입력값 앞뒤 공백 제거 + 12글자 제한
+        string raw = ui.nickNameInput.text.Trim();
+        if (raw.Length > 12) raw = raw.Substring(0, 12);
+        return raw;
     }
 
     //닉네임 저장하기

@@ -213,9 +213,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
             anim.SetBool("IsDead", true); // 유령으로 변경
         }
 
-        // 벽 뚫기 기능: 더 이상 충돌하지 않게 Collider 끄기
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
+        // Collider2D 유지 → 유령도 벽 충돌 적용
+        // (Ghost-Ghost 충돌 불필요 시 Physics2D Layer Collision Matrix에서 끄기)
 
         // 유령 상태에서도 WASD 키를 받아서 돌아다녀야 하기 때문에 기존 움직임 봉쇄 코드 삭제
 
@@ -275,7 +274,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             }
         }
 
-        Debug.Log("유령 변신 완료!! (벽 뚫기 가능)");
+        Debug.Log("유령 변신 완료!! (벽 충돌 유지)");
     }
 
     [PunRPC]

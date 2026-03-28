@@ -35,13 +35,26 @@ public class ChatUIController : MonoBehaviour
     [Header("Prefabs")]
     public GameObject chatMessagePrefab;
 
+    [Header("Badge")]
+    public GameObject badgeObject;
+    public TMP_Text badgeCountText;
+
+    private int _unreadCount = 0;
+
     private void Awake()
     {
+        Debug.Log($"[ChatUI] Awake START panel={chatPanelRoot?.name} active={chatPanelRoot?.activeSelf} badge={badgeObject?.name} lobbyChat={lobbyChat?.name}");
+
+        if (chatPanelRoot != null)
+            chatPanelRoot.SetActive(false);
+
         if (lobbyChat == null)
             lobbyChat = FindAnyObjectByType<LobbyChatManager>();
 
         if (lobbyChat != null)
             lobbyChat.BindUI(this);
+
+        Debug.Log($"[ChatUI] Awake END lobbyChat={lobbyChat?.name} bound={lobbyChat != null}");
 
         if (sendButton != null)
             sendButton.onClick.AddListener(OnSend);
@@ -66,6 +79,12 @@ public class ChatUIController : MonoBehaviour
 
         bool next = !chatPanelRoot.activeSelf;
         chatPanelRoot.SetActive(next);
+
+        if (next)
+        {
+            _unreadCount = 0;
+            UpdateBadge();
+        }
 
         bool dead = IsLocalPlayerDead();
         if (inputField != null) inputField.interactable = !dead;
@@ -105,6 +124,14 @@ public class ChatUIController : MonoBehaviour
             AddMessage($"[LOCAL] {msg}");
 
         inputField.text = "";
+        inputField.ForceLabelUpdate();
+        StartCoroutine(ReactivateInputField());
+    }
+
+    private IEnumerator ReactivateInputField()
+    {
+        inputField.DeactivateInputField();
+        yield return null;
         inputField.ActivateInputField();
     }
 
@@ -120,8 +147,18 @@ public class ChatUIController : MonoBehaviour
         var tmp = go.GetComponentInChildren<TMP_Text>();
         if (tmp != null) tmp.text = msg;
 
-        // 수정: 채팅 패널이 비활성화되어 있을 때 코루틴을 실행하면 에러가 남.
-        // 따라서 현재 활성화된 상태일 때만 스크롤을 내리도록 체크
+        // 패널이 닫혀있으면 배지 카운트 증가
+        bool panelNull = chatPanelRoot == null;
+        bool panelActive = chatPanelRoot != null && chatPanelRoot.activeSelf;
+        Debug.Log($"[ChatUI] AddMessage badge check: panelNull={panelNull} panelActive={panelActive} badgeNull={badgeObject == null} unread={_unreadCount}");
+        if (chatPanelRoot != null && !chatPanelRoot.activeSelf)
+        {
+            _unreadCount++;
+            UpdateBadge();
+            Debug.Log($"[ChatUI] Badge incremented to {_unreadCount}");
+        }
+
+        // 채팅 패널이 비활성화되어 있을 때 코루틴을 실행하면 에러가 남.
         if (this.gameObject.activeInHierarchy)
         {
             StartCoroutine(ScrollToBottomNextFrame());
@@ -148,6 +185,30 @@ public class ChatUIController : MonoBehaviour
         else Debug.LogWarning("[ChatUI] TMP_Text not found on chatMessagePrefab");
 
         StartCoroutine(ScrollToBottomNextFrame()); */
+    }
+
+    private void UpdateBadge()
+    {
+        if (badgeObject == null) return;
+
+        if (_unreadCount > 0)
+        {
+            badgeObject.SetActive(true);
+            if (badgeCountText != null)
+                badgeCountText.text = _unreadCount > 99 ? "99+" : _unreadCount.ToString();
+
+            var rt = badgeObject.GetComponent<RectTransform>();
+            if (rt != null)
+            {
+                string text = badgeCountText != null ? badgeCountText.text : "";
+                float width = text.Length <= 1 ? 15f : 15f + (text.Length - 1) * 7f;
+                rt.sizeDelta = new Vector2(width, rt.sizeDelta.y);
+            }
+        }
+        else
+        {
+            badgeObject.SetActive(false);
+        }
     }
 
     private IEnumerator ScrollToBottomNextFrame()
