@@ -48,14 +48,23 @@ public class VotingManager : MonoBehaviourPunCallbacks
         currentVoteCount = 0;
         UpdateVoteStatusText(); //투표 현황 텍스트 초기화 0/전체인원으로
 
-        if (skipButton != null) skipButton.interactable = true;
+        if (skipButton != null) 
+        {
+            // 내가 살아있을 때만 누를 수 있게 세팅!
+            bool isMyPlayerDead = false;
+            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsDead", out object isDeadObj))
+            {
+                isMyPlayerDead = (bool)isDeadObj;
+            }
+            
+            skipButton.interactable = !isMyPlayerDead;
+        }
 
         if (resultText != null)
         {
             resultText.text = "";
             resultText.gameObject.SetActive(false);
         }
-       
     }
 
     public override void OnDisable()
@@ -101,6 +110,15 @@ public class VotingManager : MonoBehaviourPunCallbacks
     {
         
         if (hasVoted) return; //이미 투표했으면 차단
+
+        if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("IsDead", out object isDeadObj))
+        {
+            if ((bool)isDeadObj)
+            {
+                Debug.Log("사망한 시민은 투표 불가");
+                return; // 함수 강제 종료
+            }
+        }
         
         SoundManager.instance.UISoundPlay("ButtonClick");
         photonView.RPC("RPC_CastVote", RpcTarget.All, targetID);
