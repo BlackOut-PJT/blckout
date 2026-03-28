@@ -115,7 +115,7 @@ public class SightSystemController : MonoBehaviour
             visionLight = found;
 
             //로컬에서만 visionlight 켜기
-            visionLight.enabled = true;
+            visionLight.enabled = false;
 
             ApplyCurrentVisualState();//바인딩 직후 현재 상태 반영
 
@@ -196,6 +196,7 @@ public class SightSystemController : MonoBehaviour
         if (globalLight != null) globalLight.intensity = globalIntensity_Normal;
         if (visionLight != null)
         {
+            visionLight.enabled = false;
             visionLight.intensity = visionIntensity_Normal;
             SetLightRadius(visionLight, visionRadius_Normal);
         }
@@ -224,6 +225,13 @@ public class SightSystemController : MonoBehaviour
 
         // 폭죽 중에는 흑백 끔
         if (grayscaleVolume != null) grayscaleVolume.weight = 0f;
+
+        // 폭죽 중에는 visionLight 끔
+        if (visionLight != null)
+        {
+            visionLight.enabled = false;
+        }
+
 
         // 폭죽 중 닉네임은 보이게
         HideOtherNicknames(false);
