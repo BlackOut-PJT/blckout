@@ -158,7 +158,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         }
 
         var stringBuilder = new StringBuilder();
-        stringBuilder.AppendLine($"READY [{readyPlayerCnt}/{curPlayerCnt}]");
+        stringBuilder.AppendLine($"NOT READY [{readyPlayerCnt}/{curPlayerCnt}]");
         statusText.text = stringBuilder.ToString();
     }
 
