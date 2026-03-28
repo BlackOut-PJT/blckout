@@ -29,7 +29,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         props.Add("IsDead", false);
         props.Add("Job", "None"); // 직업 기본값은 None 추가
         props.Add("IsReady", false);
-        if(PhotonNetwork.InRoom) PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+        if (PhotonNetwork.InRoom) PhotonNetwork.LocalPlayer.SetCustomProperties(props);
         else StartCoroutine(CoSetPropsWhenInRoom(props));
 
         // 버튼 이벤트 리스너 등록
@@ -88,6 +88,7 @@ public class ReadyManager : MonoBehaviourPunCallbacks
     {
         // 플레이어를 다시 로비창으로 이동시켜주기
         Debug.Log("방 퇴장 완료. 로비창으로 돌아갑니다.");
+        SoundManager.instance.BGMStop();
         // 로비씬의 이름 Lobby 겠죠??
         SceneManager.LoadScene("Scene_Connect");
     }
@@ -204,5 +205,16 @@ public class ReadyManager : MonoBehaviourPunCallbacks
     {
         yield return new WaitUntil(() => PhotonNetwork.IsConnectedAndReady && PhotonNetwork.InRoom);
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+    }
+
+    // 이 컴포넌트가 사라질 때(씬 전환 포함) 실행됨
+    private void OnDestroy()
+    {
+        // 방장이든 클라이언트든 씬이 바뀌면 노래를 멈춤
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.BGMStop();
+            Debug.Log("씬 전환으로 인한 BGM 정지");
+        }
     }
 }
