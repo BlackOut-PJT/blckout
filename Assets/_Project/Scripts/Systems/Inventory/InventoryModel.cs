@@ -125,7 +125,7 @@ public class InventoryModel : MonoBehaviourPunCallbacks
 
         if (item.itemID == 3)
         {
-            FireworkRpcRelay.Instance?.UseFirework(3f);
+            FireworkRpcRelay.Instance?.UseFirework(20f);
             RemoveItem();
             return;
         }

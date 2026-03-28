@@ -7,7 +7,7 @@ public class FireworkRpcRelay : MonoBehaviourPun
     public static FireworkRpcRelay Instance { get; private set; }
 
     [Header("폭죽 지속 시간")]
-    [SerializeField] private float defaultDuration = 8f;
+    private float defaultDuration = 20f;
 
     private void Awake()
     {
