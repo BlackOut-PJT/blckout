@@ -176,6 +176,8 @@ public class KillBtnController : MonoBehaviourPunCallbacks
                 if (killerPV != null)
                     //모든 클라에게 RPC 호출 -> 10초 동안 범인 표시
                     killerPV.RPC("RPC_ShowCriminalTag", RpcTarget.All, 10f);
+                    // 살인자가 불이 켜져있을 때 사람을 죽이면 신고
+                    GameStateManager.instance.photonView.RPC("RPC_CatchKiller", RpcTarget.MasterClient);
 
             }
             #endregion
