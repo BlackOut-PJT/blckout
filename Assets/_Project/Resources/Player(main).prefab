@@ -346,7 +346,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ecb5f16837b94a70845a627ddec9d6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 4
+  moveSpeed: 3
+  killerMoveSpeed: 2.6
   anim: {fileID: 3852693228695552342}
   playerNameText: {fileID: 8845975884903861876}
   spriteRenderer: {fileID: 8181760570200192285}

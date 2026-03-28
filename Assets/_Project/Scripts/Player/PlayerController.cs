@@ -9,7 +9,8 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerController : MonoBehaviourPunCallbacks
 {
     [Header("플레이어 설정")]
-    public float moveSpeed = 5f;
+    public float moveSpeed = 3f;
+    public float killerMoveSpeed = 2.6f;
 
     [Header("컴포넌트 연결")]
     public Animator anim;
@@ -168,6 +169,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             if (job == "Killer" && photonView.IsMine)
             {
                 playerNameText.color = Color.red; // 킬러면 빨간색
+                moveSpeed = killerMoveSpeed; // 살인자면 속도 감속
             }
             //일반인 닉네임 검정색 설정은 다른데에서 해서 + 초록색 설정 안 덮어쓰도록 이 부분은 삭제함
         }
