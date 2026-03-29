@@ -87,6 +87,7 @@ MonoBehaviour:
   - RPC_CraftSuccess
   - RPC_MigrateToNewRoom
   - RPC_DestroyRoomAndLeave
+  - RPC_CatchKiller
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

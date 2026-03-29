@@ -43,6 +43,7 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     private int loadedPlayerCnt = 0;
     public bool isGameStart = false;
     public bool isGameEnded = false;
+    public bool isKillerCaught = false;
     [HideInInspector] public bool skipWinCondition = false;
 
     //투표용 변수
@@ -177,6 +178,11 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
     public WhoWin CheckWinCondition()
     {
         if (skipWinCondition) return WhoWin.None;
+        if (isKillerCaught)
+        {
+            isGameEnded=true;
+            return WhoWin.SurvivorWin;
+        }
 
         // 생존자 승리: 게임 시작 다 지나면 or 살인마 검거
         // 살인마 승리: 생존자 전멸
@@ -434,6 +440,16 @@ public class GameStateManager : MonoBehaviourPunCallbacks, IPunObservable
         if (instance == this)
         {
             instance = null;
+        }
+    }
+
+    [PunRPC]
+    public void RPC_CatchKiller()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            isKillerCaught = true;
+            Debug.Log("불 켜져있을 때 살인 발생! 살인자 검거 완료");
         }
     }
     #endregion
