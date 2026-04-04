@@ -197,6 +197,17 @@ public class InventoryUIController : MonoBehaviour, IClickHandler
         inventoryModel.UseItem();
     }
 
+    public void HideAllSlots()
+    {
+        foreach (var slot in slotRoots)
+            slot.SetActive(false);
+    }
+
+    public void ShowAllSlots()
+    {
+        UpdateInventoryUI();
+    } 
+
     private void OnDestroy()
     {
         if (instance == this)

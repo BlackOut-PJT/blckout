@@ -11,6 +11,9 @@ public class DeadBody : MonoBehaviourPun, IInteractable
     [Header("UI")]
     [SerializeField] private GameObject reportUI; //신고(E)(report) UI
 
+    // 투표로 추방된 시체인지 여부
+    private bool isVoteKilled = false;
+
     // 이미 신고됐는지(중복 신고 방지)
     private bool reported;
 
@@ -21,12 +24,24 @@ public class DeadBody : MonoBehaviourPun, IInteractable
         {
             reportUI.SetActive(false);
         }
+
+        // InstantiationData에서 isVoteKilled 읽기
+        if (photonView != null && photonView.InstantiationData != null)
+        {
+            object[] data = photonView.InstantiationData;
+            if (data.Length > 1)
+            {
+                isVoteKilled = (bool)data[1];
+                Debug.Log($"[DeadBody] Awake - isVoteKilled = {isVoteKilled}");
+            }
+        }
     }
 
     //가까이 있을 때 UI 키기
     public void ShowUI(bool show)
     {
         if(reported) return;
+        if(isVoteKilled) return;
 
         if(reportUI!=null)
             reportUI.SetActive(show);
@@ -37,6 +52,8 @@ public class DeadBody : MonoBehaviourPun, IInteractable
     {
         //이미 신고됐으면 무시
         if(reported) return;
+        //투표 사망자는 신고 불가
+        if(isVoteKilled) return;
 
         //신고한 사람 ActorNumber 저장
         int reporterActorNumber = -1;

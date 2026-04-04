@@ -248,6 +248,20 @@ public class VotingManager : MonoBehaviourPunCallbacks
                 Hashtable props = new Hashtable();
                 props.Add("IsDead", true);
                 targetPlayer.SetCustomProperties(props);
+
+                // 투표 사망자의 PlayerController 찾아서 Die() 호출
+                foreach (var pc in Object.FindObjectsByType<PlayerController>(FindObjectsSortMode.None))
+                {
+                    if (pc.photonView.Owner.ActorNumber == targetId)
+                    {
+                        pc.photonView.RPC(nameof(PlayerController.RPC_SpawnDeadBody),
+                            RpcTarget.MasterClient,
+                            pc.transform.position,
+                            pc.photonView.Owner.NickName,
+                            true); // isVoteKilled = true
+                        break;
+                    }
+                }
             }
         }
         
@@ -261,7 +275,12 @@ public class VotingManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_ShowVoteResult (string msg, bool isTie)
     {
+        // 인벤토리 숨기기
+        if (InventoryUIController.instance != null)
+            InventoryUIController.instance.HideAllSlots();
+
         voteResultPanel.SetActive(true);
+
         if (resultText != null)
         {
             resultText.text = msg;
@@ -291,6 +310,10 @@ public class VotingManager : MonoBehaviourPunCallbacks
 
     void CloseMeeting()
     {
+        // 인벤토리 다시 보이기
+        if (InventoryUIController.instance != null)
+            InventoryUIController.instance.ShowAllSlots();
+
         if (GameStateManager.instance != null) 
         {
             if (resultText != null) {
