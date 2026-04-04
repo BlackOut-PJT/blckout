@@ -275,7 +275,12 @@ public class VotingManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void RPC_ShowVoteResult (string msg, bool isTie)
     {
+        // 인벤토리 숨기기
+        if (InventoryUIController.instance != null)
+            InventoryUIController.instance.HideAllSlots();
+
         voteResultPanel.SetActive(true);
+
         if (resultText != null)
         {
             resultText.text = msg;
@@ -305,6 +310,10 @@ public class VotingManager : MonoBehaviourPunCallbacks
 
     void CloseMeeting()
     {
+        // 인벤토리 다시 보이기
+        if (InventoryUIController.instance != null)
+            InventoryUIController.instance.ShowAllSlots();
+
         if (GameStateManager.instance != null) 
         {
             if (resultText != null) {
