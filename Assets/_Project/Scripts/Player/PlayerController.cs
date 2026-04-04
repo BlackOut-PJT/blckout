@@ -156,7 +156,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         bool isDead = false;
 
         if (photonView.Owner.CustomProperties.ContainsKey("IsDead")) isDead = (bool)photonView.Owner.CustomProperties["IsDead"];
-        if (isDead) Die();
+        if (isDead) Die(isAssassinated: false, isVoteKilled: false, spawnBody: false); // ← 시체 스폰 안 함
     }
 
     void ApplyKillerNameRed()
@@ -175,7 +175,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
     }
 
-    public void Die(bool isAssassinated = false)
+    public void Die(bool isAssassinated = false, bool isVoteKilled = false, bool spawnBody = true)
     {        
         if (photonView.IsMine)
         {
@@ -185,8 +185,11 @@ public class PlayerController : MonoBehaviourPunCallbacks
             ItemData dropItem = InventoryModel.instance.DropItem();
             if (dropItem != null) photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
 
-            // 바닥에 남겨질 시체 프리팹 추가
-            photonView.RPC(nameof(RPC_SpawnDeadBody), RpcTarget.MasterClient, diePos, photonView.Owner.NickName);
+            // spawnBody가 true일 때만 시체 생성
+            if (spawnBody)
+            {
+                photonView.RPC(nameof(RPC_SpawnDeadBody), RpcTarget.MasterClient, diePos, photonView.Owner.NickName, isVoteKilled);
+            }
         }
 
         Debug.Log($"{photonView.Owner.NickName} 사망!");
@@ -280,18 +283,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void RPC_SpawnDeadBody(Vector3 spawnPos, string deadPlayerName)
+    public void RPC_SpawnDeadBody(Vector3 spawnPos, string deadPlayerName, bool isVoteKilled)
     {
         // 방장만 시체를 생성할 권한이 있음
         if (!PhotonNetwork.IsMasterClient) return;
 
         // 시체가 누구인지 알 수 있게 닉네임 데이터를 배열에 담아 보내기
-        object[] data = new object[] { deadPlayerName };
+        object[] data = new object[] { deadPlayerName, isVoteKilled};
 
         // 플레이어가 나가도 유지되도록 RoomObject로 생성
         PhotonNetwork.InstantiateRoomObject("DeadBodyPrefab", spawnPos, Quaternion.identity, 0, data);
 
-        Debug.Log($"방장이 {deadPlayerName}의 시체를 바닥에 생성했습니다!");
+        Debug.Log($"방장이 {deadPlayerName}의 시체를 바닥에 생성했습니다! (투표사망여부: {isVoteKilled})");
     }
 
     //발자국 소리
