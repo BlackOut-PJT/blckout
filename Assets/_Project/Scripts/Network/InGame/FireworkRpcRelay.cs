@@ -9,6 +9,8 @@ public class FireworkRpcRelay : MonoBehaviourPun
     [Header("폭죽 지속 시간")]
     private float defaultDuration = 20f;
 
+    public bool isFireworkActive { get; private set; } = false;
+
     private void Awake()
     {
         //싱글톤
@@ -19,8 +21,6 @@ public class FireworkRpcRelay : MonoBehaviourPun
         }
 
         Instance = this;
-
-        //DontDestroyOnLoad(gameObject);
     }
 
     //인벤에서 폭죽 사용 시 호출
@@ -40,6 +40,10 @@ public class FireworkRpcRelay : MonoBehaviourPun
     {
         SoundManager.instance.SFXPlay("FireworkNoise"); //효과음 재생
 
+        isFireworkActive = true;
+        CancelInvoke(nameof(ResetFireworkState)); // (혹시 연속으로 터뜨렸을 때 꼬임 방지)
+        Invoke(nameof(ResetFireworkState), duration);
+
         //씬에서 SightSystemController 찾기
         var sight = FindFirstObjectByType<SightSystemController>();
 
@@ -51,6 +55,12 @@ public class FireworkRpcRelay : MonoBehaviourPun
         {
             Debug.LogWarning("[FireworkRpcRelay] SightSystemController not found in scene.");
         }
+    }
+
+    private void ResetFireworkState()
+    {
+        isFireworkActive = false;
+        Debug.Log("폭죽 효과 종료. 다시 어두워짐 판정 시작!");
     }
 
     private void OnDestroy()
