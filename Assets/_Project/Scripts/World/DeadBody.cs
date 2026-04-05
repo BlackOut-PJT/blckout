@@ -11,6 +11,8 @@ public class DeadBody : MonoBehaviourPun, IInteractable
     [Header("UI")]
     [SerializeField] private GameObject reportUI; //신고(E)(report) UI
 
+    [SerializeField] private Collider2D bodyCollider;
+
     // 투표로 추방된 시체인지 여부
     private bool isVoteKilled = false;
 
@@ -34,6 +36,11 @@ public class DeadBody : MonoBehaviourPun, IInteractable
                 isVoteKilled = (bool)data[1];
                 Debug.Log($"[DeadBody] Awake - isVoteKilled = {isVoteKilled}");
             }
+        }
+
+        if(isVoteKilled)
+        {
+            SetLayerRecursively(gameObject, LayerMask.NameToLayer("Ignore Raycast"));
         }
     }
 
@@ -109,6 +116,16 @@ public class DeadBody : MonoBehaviourPun, IInteractable
                 GameStateManager.instance.StartMeeting();
 
             PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        obj.layer = newLayer;
+
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 
