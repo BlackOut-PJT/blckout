@@ -27,6 +27,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
     private Rigidbody2D rb;
     private Vector2 moveInput; //입력값 저장용 변수 추가
 
+    private bool hasBecomeGhost = false;
+    private bool hasDroppedItem = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -156,7 +159,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         bool isDead = false;
 
         if (photonView.Owner.CustomProperties.ContainsKey("IsDead")) isDead = (bool)photonView.Owner.CustomProperties["IsDead"];
-        if (isDead) Die(isAssassinated: false, isVoteKilled: false, spawnBody: false); // ← 시체 스폰 안 함
+        if (isDead && !hasBecomeGhost)
+        {
+            photonView.RPC(nameof(RPC_BecomeGhost), RpcTarget.All, false);
+        }
     }
 
     void ApplyKillerNameRed()
@@ -177,24 +183,30 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     public void Die(bool isAssassinated = false, bool isVoteKilled = false, bool spawnBody = true)
     {        
-        if (photonView.IsMine)
+        if (!photonView.IsMine) return;
+
+        Vector3 diePos = transform.position;
+
+        // 아이템 드롭 1회만
+        if (!hasDroppedItem)
         {
-            Vector3 diePos = transform.position;
+            hasDroppedItem = true;
 
             Vector3 randomPos = transform.position;
             ItemData dropItem = InventoryModel.instance.DropItem();
-            if (dropItem != null) photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
-
-            // spawnBody가 true일 때만 시체 생성
-            if (spawnBody)
-            {
-                photonView.RPC(nameof(RPC_SpawnDeadBody), RpcTarget.MasterClient, diePos, photonView.Owner.NickName, isVoteKilled);
-            }
+            if (dropItem != null)
+                photonView.RPC(nameof(RPC_DropItems), RpcTarget.MasterClient, dropItem.itemID, randomPos);
         }
 
-        Debug.Log($"{photonView.Owner.NickName} 사망!");
+        // 시체 생성
+        if (spawnBody)
+        {
+            photonView.RPC(nameof(RPC_SpawnDeadBody), RpcTarget.MasterClient, diePos, photonView.Owner.NickName, isVoteKilled);
+        }
 
-        photonView.RPC("RPC_BecomeGhost", RpcTarget.All, isAssassinated);
+        Debug.Log($"{photonView.Owner.NickName} 사망! isVoteKilled={isVoteKilled}");
+
+        photonView.RPC(nameof(RPC_BecomeGhost), RpcTarget.All, isAssassinated);
         SoundManager.instance.SFXPlay("DeadPopNoise");
     }
 
@@ -211,6 +223,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_BecomeGhost(bool isAssassinated)
     {
+        if (hasBecomeGhost) return;
+        hasBecomeGhost = true;
+
         // 애니메이터에게 사망 신호 보내기
         if (anim != null)
         {
@@ -289,12 +304,26 @@ public class PlayerController : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
 
         // 시체가 누구인지 알 수 있게 닉네임 데이터를 배열에 담아 보내기
-        object[] data = new object[] { deadPlayerName, isVoteKilled};
+        object[] data = new object[] { deadPlayerName, isVoteKilled };
 
         // 플레이어가 나가도 유지되도록 RoomObject로 생성
         PhotonNetwork.InstantiateRoomObject("DeadBodyPrefab", spawnPos, Quaternion.identity, 0, data);
 
         Debug.Log($"방장이 {deadPlayerName}의 시체를 바닥에 생성했습니다! (투표사망여부: {isVoteKilled})");
+    }
+
+    [PunRPC]
+    public void RPC_DieByKill()
+    {
+        if (!photonView.IsMine) return;
+        Die(isAssassinated: true, isVoteKilled: false, spawnBody: true);
+    }
+
+    [PunRPC]
+    public void RPC_DieByVote()
+    {
+        if (!photonView.IsMine) return;
+        Die(isAssassinated: false, isVoteKilled: true, spawnBody: true);
     }
 
     //발자국 소리
