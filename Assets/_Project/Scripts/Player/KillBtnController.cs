@@ -36,7 +36,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
     void Update()
     {
         // Killer만 스페이스바 스킬 발동되도록
-        if(!GameUtils.IsMyPlayerKiller) return;
+        if (!GameUtils.IsMyPlayerKiller) return;
 
         // 스페이스바 누르면 스킬 발동 함수 호출
         if (Input.GetKeyDown(KeyCode.Space))
@@ -156,7 +156,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
                 Debug.Log("가해자 킬 모션 재생");
                 KillMotionController.instance.ShowKillMotion();
             }
-            
+
             // 5) 타켓 플레이어 사망 처리
             // IsDead = true로 변경
             Hashtable props = new Hashtable();
@@ -166,19 +166,30 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             // 가져온 스크립트의 Die() 함수 호출
             targetScript.Die(true);
 
-            #region [범인태그]
-            //밝은 상태에서 Attack했다면
-            if (GameStateManager.instance != null && GameStateManager.instance.currentState == GameState.Playing_OnLight)
+            #region [범인태그 및 즉시 승리 판정]
+
+            // 기본적으로 낮(Playing_OnLight)인지 확인
+            bool isDaytime = (GameStateManager.instance != null && GameStateManager.instance.currentState == GameState.Playing_OnLight);
+
+            bool isFireworkActive = false;
+            if (FireworkRpcRelay.Instance != null)
             {
-                //살인마 오브젝트 PhotonView 컴포넌트 가져옴
+                isFireworkActive = FireworkRpcRelay.Instance.isFireworkActive;
+            }
+
+            // 낮이거나 OR 폭죽이 터져서 밝다면?! (둘 중 하나라도 참이면 범인 발각!)
+            if (isDaytime || isFireworkActive)
+            {
+                // 10초 동안 범인 닉네임 빨갛게 표시
                 PhotonView killerPV = myPlayer.GetComponent<PhotonView>();
-
                 if (killerPV != null)
-                    //모든 클라에게 RPC 호출 -> 10초 동안 범인 표시
                     killerPV.RPC("RPC_ShowCriminalTag", RpcTarget.All, 10f);
-                    // 살인자가 불이 켜져있을 때 사람을 죽이면 신고
-                    GameStateManager.instance.photonView.RPC("RPC_CatchKiller", RpcTarget.MasterClient);
 
+                // 방장에게 현행범 즉시 신고 (시민 승리로 직행!)
+                if (GameStateManager.instance != null)
+                {
+                    GameStateManager.instance.photonView.RPC("RPC_CatchKiller", RpcTarget.MasterClient);
+                }
             }
             #endregion
 
