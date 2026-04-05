@@ -254,11 +254,7 @@ public class VotingManager : MonoBehaviourPunCallbacks
                 {
                     if (pc.photonView.Owner.ActorNumber == targetId)
                     {
-                        pc.photonView.RPC(nameof(PlayerController.RPC_SpawnDeadBody),
-                            RpcTarget.MasterClient,
-                            pc.transform.position,
-                            pc.photonView.Owner.NickName,
-                            true); // isVoteKilled = true
+                        pc.photonView.RPC(nameof(PlayerController.RPC_DieByVote), pc.photonView.Owner);
                         break;
                     }
                 }
