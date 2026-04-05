@@ -197,6 +197,8 @@ public class ReadyManager : MonoBehaviourPunCallbacks
         {
             // 게임 시작 시 더 이상 다른 사람이 방으로 못 들어오게 막기
             PhotonNetwork.CurrentRoom.IsOpen = false;
+            //로비 방 목록에서 이 방이 검색되지 않도록 숨기기
+            PhotonNetwork.CurrentRoom.IsVisible = false;
             PhotonNetwork.LoadLevel("TestScene_Main");
         }
     }
