@@ -164,7 +164,7 @@ public class KillBtnController : MonoBehaviourPunCallbacks
             targetScript.photonView.Owner.SetCustomProperties(props);
 
             // 가져온 스크립트의 Die() 함수 호출
-            targetScript.Die(true);
+            targetScript.photonView.RPC(nameof(PlayerController.RPC_DieByKill), targetScript.photonView.Owner);
 
             #region [범인태그 및 즉시 승리 판정]
 
