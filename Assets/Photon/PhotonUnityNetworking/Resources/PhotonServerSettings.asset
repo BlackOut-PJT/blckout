@@ -88,6 +88,10 @@ MonoBehaviour:
   - RPC_MigrateToNewRoom
   - RPC_DestroyRoomAndLeave
   - RPC_CatchKiller
+  - RPC_DropItemOnVoteDeath
+  - RPC_TriggerDeath
+  - RPC_DieByKill
+  - RPC_DieByVote
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
